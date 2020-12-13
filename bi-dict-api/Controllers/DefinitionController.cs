@@ -31,7 +31,7 @@ namespace bi_dict_api.Controllers {
         [HttpGet("EN/{word}/{wordLanguage}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<DefinitionEN>> GetEN(string word, string wordLanguage) {
+        public async Task<ActionResult<Definition>> GetEN(string word, string wordLanguage) {
             var definition = await GetOrNull(word, wordLanguage, "EN");
             return DefinitionResponse(definition);
         }
@@ -42,7 +42,7 @@ namespace bi_dict_api.Controllers {
         [HttpGet("VN/{word}/{wordLanguage}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<DefinitionEN>> GetVN(string word, string wordLanguage) {
+        public async Task<ActionResult<Definition>> GetVN(string word, string wordLanguage) {
             var definition = await GetOrNull(word, wordLanguage, "VN");
             return DefinitionResponse(definition);
         }
@@ -67,8 +67,8 @@ namespace bi_dict_api.Controllers {
                 return null;
 
             var html = await response.Content.ReadAsStringAsync();
-            var definitionParser = DefinitionParserFactory.Create(definitionLanguage);
-            Definition definition = definitionParser.ParseFromWikitionaryHtml(html, wordLanguage);
+            var definitionParser = new DefinitionParserFactory(wordLanguage, definitionLanguage).Create();
+            Definition definition = definitionParser.ParseFromWikitionaryHtml(html);
             return definition;
         }
 

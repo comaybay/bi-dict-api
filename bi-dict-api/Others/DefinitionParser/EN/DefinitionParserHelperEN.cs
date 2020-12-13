@@ -7,15 +7,15 @@ using System.Threading.Tasks;
 
 namespace bi_dict_api.Others.DefinitionParser {
 
-    public class DefinitionParserHelperEN {
+    public class DefinitionParserHelperEN : IDefinitionParserHelper {
 
-        public static IList<string> ParsePronunciationFrom(HtmlNode section) {
-            return section.QuerySelectorAll("span.IPA")
+        public IList<string> ParsePronunciationFrom(HtmlNode PronunciationSection) {
+            return PronunciationSection.QuerySelectorAll("span.IPA")
                           .Select(span => span.InnerText)
                           .ToList();
         }
 
-        public static string GetLanguageSectionId(string language) {
+        public string GetLanguageSectionId(string language) {
             return language switch {
                 "EN" => "English",
                 "VN" => "Vietnamese",
