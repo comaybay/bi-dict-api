@@ -1,4 +1,4 @@
-﻿using bi_dict_api.Models.DefinitionEN;
+﻿using bi_dict_api.Models;
 using Fizzler.Systems.HtmlAgilityPack;
 using HtmlAgilityPack;
 using System;
@@ -12,14 +12,16 @@ namespace bi_dict_api.Others.DefinitionParser {
 
         public IList<EtymologySection> Parse(HtmlNode languageSection) {
             var rawEtymologys = languageSection.QuerySelectorAll(Config.EtymologySectionQuery)
-                                                .Select(elem => elem.ParentNode);
+                                               .Select(elem => elem.ParentNode);
+            var etymologys = new List<EtymologySection>();
 
-            //Normal Case: Multiple Etymologys (definitions are inside of etymology sections)
-            var etymologys = rawEtymologys.Select(rawEtymology => ParseEtymology(rawEtymology))
-                                          .ToList();
-
-            if (rawEtymologys.Count() == 1) {
-                //Special Case where there is only one etymology (definitions might be outside of etymology section)
+            if (rawEtymologys.Count() > 1) {
+                //Normal Case: Multiple Etymologys (definitions are inside of etymology sections)
+                etymologys.AddRange(rawEtymologys.Select(rawEtymology => ParseEtymology(rawEtymology))
+                                                 .ToList());
+            }
+            else {
+                //Special Case where there is only one etymology (definitions might be outside of etymology section or no etymology section at all)
                 //Example: https://en.wiktionary.org/api/rest_v1/page/html/person (definitions are outside)
                 //         https://en.wiktionary.org/api/rest_v1/page/html/ma     (definitions are not outside)
                 var etymology = ParseEtymologySpecialCase(languageSection);
@@ -31,17 +33,17 @@ namespace bi_dict_api.Others.DefinitionParser {
             return etymologys;
         }
 
-        private EtymologySection ParseEtymologySpecialCase(HtmlNode languageSection) => new EtymologySection {
+        protected virtual EtymologySection ParseEtymologySpecialCase(HtmlNode languageSection) => new EtymologySection {
             Pronunciations = new List<string>(), //no need since these are in globalPronunciations
             InnerSections = ParseEtymologyInnerSections(languageSection)
         };
 
-        private EtymologySection ParseEtymology(HtmlNode rawEtymology) => new EtymologySection {
+        protected virtual EtymologySection ParseEtymology(HtmlNode rawEtymology) => new EtymologySection {
             Pronunciations = ParseEtymologyPronunciations(rawEtymology),
             InnerSections = ParseEtymologyInnerSections(rawEtymology),
         };
 
-        private IList<string> ParseEtymologyPronunciations(HtmlNode rawEtymology) {
+        protected virtual IList<string> ParseEtymologyPronunciations(HtmlNode rawEtymology) {
             var pronunciationSection = rawEtymology.QuerySelector(Config.EtymologyPronunciationQuery)
                                                    ?.ParentNode;
             if (pronunciationSection is null)
@@ -50,7 +52,7 @@ namespace bi_dict_api.Others.DefinitionParser {
                 return Config.Helper.ParsePronunciationFrom(pronunciationSection);
         }
 
-        private IList<EtymologyInnerSection> ParseEtymologyInnerSections(HtmlNode rawEtymology) {
+        protected virtual IList<EtymologyInnerSection> ParseEtymologyInnerSections(HtmlNode rawEtymology) {
             var innerSections = rawEtymology.Elements("section")
                                             ?.Where(rawSection => {
                                                 var sectionTitle = rawSection.FirstChild.InnerText;
@@ -63,7 +65,7 @@ namespace bi_dict_api.Others.DefinitionParser {
             return innerSections ?? new List<EtymologyInnerSection>();
         }
 
-        private EtymologyInnerSection ParseEtymologyInnerSection(HtmlNode rawSection) => new EtymologyInnerSection() {
+        protected virtual EtymologyInnerSection ParseEtymologyInnerSection(HtmlNode rawSection) => new EtymologyInnerSection() {
             PartOfSpeech = rawSection.FirstChild?.InnerText,
             Inflection = rawSection.SelectSingleNode("p")?.InnerText,
             DefinitionSections = ParseDefinitionSections(rawSection),
@@ -71,36 +73,36 @@ namespace bi_dict_api.Others.DefinitionParser {
             Antonyms = ParseInnerSectionAntonymSection(rawSection),
         };
 
-        private IList<string> ParseInnerSectionSynonymSection(HtmlNode rawSection) {
+        protected virtual IList<string> ParseInnerSectionSynonymSection(HtmlNode rawSection) {
             var synonyms = rawSection.QuerySelector(Config.InnerSectionSynonymQuery)
                                      ?.ParentNode
                                      ?.QuerySelectorAll("ul > li")
-                                     ?.Select(elem => elem.InnerText)
+                                     .Select(elem => elem.InnerText)
                                      .ToList();
 
             return synonyms ?? new List<string>();
         }
 
-        private IList<string> ParseInnerSectionAntonymSection(HtmlNode rawEtymology) {
+        protected virtual IList<string> ParseInnerSectionAntonymSection(HtmlNode rawEtymology) {
             var antonyms = rawEtymology.QuerySelector(Config.InnerSectionAntonymQuery)
                                        ?.ParentNode
                                        ?.QuerySelectorAll("ul > li")
-                                       ?.Select(elem => elem.InnerText)
+                                       .Select(elem => elem.InnerText)
                                        .ToList();
 
             return antonyms ?? new List<string>();
         }
 
-        private IList<DefinitionSection> ParseDefinitionSections(HtmlNode rawSection) {
+        protected virtual IList<DefinitionSection> ParseDefinitionSections(HtmlNode rawSection) {
             var definitionSections = rawSection.ParentNode
-                                               ?.QuerySelectorAll($"#{rawSection.Id} > ol > li")
-                                               ?.Select(rawDefinitionSection => ParseDefinitionSection(rawDefinitionSection))
+                                               ?.QuerySelectorAll($"[id='{rawSection.Id}'] > ol > li")
+                                               .Select(rawDefinitionSection => ParseDefinitionSection(rawDefinitionSection))
                                                .ToList();
 
             return definitionSections ?? new List<DefinitionSection>();
         }
 
-        private DefinitionSection ParseDefinitionSection(HtmlNode rawDefinitionSection) {
+        protected virtual DefinitionSection ParseDefinitionSection(HtmlNode rawDefinitionSection) {
             //rawDefinitionSection should be an li element that might
             //contains an ul element (examples with citation)
             //or an dl element (examples without citation)
@@ -115,14 +117,14 @@ namespace bi_dict_api.Others.DefinitionParser {
             };
         }
 
-        private static string ParseDefinitionSectionDefinition(HtmlNode rawDefinitionSection) {
+        protected virtual string ParseDefinitionSectionDefinition(HtmlNode rawDefinitionSection) {
             string definition = rawDefinitionSection.InnerText; //definition text, includes examples if they exist
             int definitionLength = definition.IndexOf('\n');    //definition length will be -1 if there are no examples
 
             return definitionLength == -1 ? definition : definition.Substring(0, definitionLength);
         }
 
-        private static List<string> ParseExamples(HtmlNode rawDefinitionSection) {
+        protected virtual List<string> ParseExamples(HtmlNode rawDefinitionSection) {
             var examples = new List<string>();
 
             static bool isElementContainsExamples(HtmlNode elem) {
@@ -134,45 +136,41 @@ namespace bi_dict_api.Others.DefinitionParser {
 
             //examples without citation
             var withoutCitation = rawDefinitionSection.ParentNode
-                                                      ?.QuerySelectorAll($"#{rawDefinitionSection.Id} > dl > dd")
-                                                      ?.Where(node => isElementContainsExamples(node))
-                                                      ?.Select(node => node.InnerText);
+                                                      ?.QuerySelectorAll($"[id='{rawDefinitionSection.Id}'] > dl > dd")
+                                                      .Where(node => isElementContainsExamples(node))
+                                                      .Select(node => node.InnerText);
 
             //exaples with citation
             var withCitation = rawDefinitionSection.ParentNode
-                                                   ?.QuerySelectorAll($"#{rawDefinitionSection.Id} > ul > li dl > dd")
-                                                   ?.Where(node => isElementContainsExamples(node))
-                                                   ?.Select(node => node.InnerText);
+                                                   ?.QuerySelectorAll($"[id='{rawDefinitionSection.Id}'] > ul > li dl > dd")
+                                                   .Where(node => isElementContainsExamples(node))
+                                                   .Select(node => node.InnerText);
 
             examples.AddRange(withoutCitation);
             examples.AddRange(withCitation);
             return examples;
         }
 
-        private static IList<string> ParseDefinitionSectionSynonyms(HtmlNode rawDefinitionSection) {
-            var synonyms = rawDefinitionSection.QuerySelectorAll("dl > dd")
-                                               ?.Where(elem => elem.InnerText.StartsWith("Synonym"))
-                                               ?.SelectMany(elem => {
-                                                   //remove string "Synonym(s): "
-                                                   int startIndex = elem.InnerText.IndexOf(' ') + 1;
-                                                   return elem.InnerText[startIndex..].Split(", ");
-                                               })
-                                               .ToList();
-
-            return synonyms ?? new List<string>();
+        protected virtual IList<string> ParseDefinitionSectionSynonyms(HtmlNode rawDefinitionSection) {
+            return rawDefinitionSection.QuerySelectorAll("dl > dd")
+                                                .Where(elem => elem.InnerText.StartsWith(Config.SynonymTextQuery))
+                                                .SelectMany(elem => {
+                                                    //remove string "Synonym(s): "
+                                                    int startIndex = elem.InnerText.IndexOf(' ') + 1;
+                                                    return elem.InnerText[startIndex..].Split(", ");
+                                                })
+                                                .ToList();
         }
 
-        private static IList<string> ParseDefinitionSectionAntonyms(HtmlNode rawDefinitionSection) {
-            var antonyms = rawDefinitionSection.QuerySelectorAll("dl > dd")
-                                       ?.Where(elem => elem.InnerText.StartsWith("Antonym"))
-                                       ?.SelectMany(node => {
+        protected virtual IList<string> ParseDefinitionSectionAntonyms(HtmlNode rawDefinitionSection) {
+            return rawDefinitionSection.QuerySelectorAll("dl > dd")
+                                       .Where(elem => elem.InnerText.StartsWith(Config.AntonymTextQuery))
+                                       .SelectMany(node => {
                                            //remove string "Antonym(s): "
                                            int startIndex = node.InnerText.IndexOf(' ') + 1;
                                            return node.InnerText[startIndex..].Split(", ");
                                        })
                                        .ToList();
-
-            return antonyms ?? new List<string>();
         }
     }
 }

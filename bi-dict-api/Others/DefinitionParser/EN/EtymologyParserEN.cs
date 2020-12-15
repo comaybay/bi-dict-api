@@ -11,6 +11,8 @@
                 EtymologySectionQuery = "section > [id^='Etymology']",
                 InnerSectionAntonymQuery = "section > [id^='Antonym']",
                 InnerSectionSynonymQuery = "section > [id^='Synonym']",
+                AntonymTextQuery = "Antonym",
+                SynonymTextQuery = "Synonym",
                 Helper = new DefinitionParserHelperEN(),
             };
         }

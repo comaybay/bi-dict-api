@@ -1,6 +1,7 @@
 ﻿using bi_dict_api.Models;
 using bi_dict_api.Others.DefinitionParser;
 using bi_dict_api.Others.DefinitionParser.EN;
+using bi_dict_api.Others.DefinitionParser.VN;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,10 +18,10 @@ namespace bi_dict_api.Others {
             _definitionLanguage = definitionLanguage;
         }
 
-        public IDefinitionParser Create() {
+        public DefinitionParserBase Create() {
             return _definitionLanguage switch {
                 "EN" => new DefinitionParserEN(_wordLanguage, _definitionLanguage),
-                "VN" => throw new NotImplementedException(),
+                "VN" => new DefinitionParserVN(_wordLanguage, _definitionLanguage),
                 "JP" => throw new NotImplementedException(),
                 _ => throw new NotImplementedException(),
             };

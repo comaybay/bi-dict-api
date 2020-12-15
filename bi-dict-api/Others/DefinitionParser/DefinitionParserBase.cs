@@ -1,5 +1,4 @@
 ﻿using bi_dict_api.Models;
-using bi_dict_api.Models.DefinitionEN;
 using Fizzler.Systems.HtmlAgilityPack;
 using HtmlAgilityPack;
 using System;
@@ -13,7 +12,7 @@ namespace bi_dict_api.Others.DefinitionParser {
         private HtmlDocument Document { get; set; }
         private HtmlNode LanguageSection { get; set; }
 
-        protected DefinitionParserOptions Config { get; set; }
+        protected DefinitionParserOptions Config { get; init; }
 
         public Definition ParseFromWikitionaryHtml(string html) {
             Initialization(html, Config.WordLanguage);

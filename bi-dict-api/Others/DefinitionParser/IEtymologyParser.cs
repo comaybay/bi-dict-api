@@ -1,4 +1,4 @@
-﻿using bi_dict_api.Models.DefinitionEN;
+﻿using bi_dict_api.Models;
 using HtmlAgilityPack;
 using System.Collections.Generic;
 

@@ -1,5 +1,4 @@
 ﻿using bi_dict_api.Models;
-using bi_dict_api.Models.DefinitionEN;
 using bi_dict_api.Others;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -32,6 +31,7 @@ namespace bi_dict_api.Controllers {
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Definition>> GetEN(string word, string wordLanguage) {
+            word = FormatWord(word);
             var definition = await GetOrNull(word, wordLanguage, "EN");
             return DefinitionResponse(definition);
         }
@@ -43,9 +43,12 @@ namespace bi_dict_api.Controllers {
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Definition>> GetVN(string word, string wordLanguage) {
+            word = FormatWord(word);
             var definition = await GetOrNull(word, wordLanguage, "VN");
             return DefinitionResponse(definition);
         }
+
+        private string FormatWord(string word) => word.Trim().ToLower().Replace(' ', '_');
 
         private ActionResult DefinitionResponse(Definition definition) => definition is null ? NotFound() : Ok(definition);
 
@@ -54,14 +57,16 @@ namespace bi_dict_api.Controllers {
                 //if definition is null => can't parse wikitionary page (page doesn't contain section of wordLanguage)
                 return await Get(word, wordLanguage, definitionLanguage);
             }
-            catch (ArgumentException) {
-                //given wordLanguage is not implemented or unknown
+            catch (ArgumentException e) {
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+                //given wordLanguage or definitionLanguage is not implemented or unknown
                 return null;
             }
         }
 
         private async Task<Definition> Get(string word, string wordLanguage, string definitionLanguage) {
-            var response = await GetWikitionaryHTML(word, definitionLanguage);
+            var response = await SendGetWikitionaryHTMLRequest(word, definitionLanguage);
             //word not found on wikitionary
             if (!response.IsSuccessStatusCode)
                 return null;
@@ -72,8 +77,8 @@ namespace bi_dict_api.Controllers {
             return definition;
         }
 
-        private async Task<HttpResponseMessage> GetWikitionaryHTML(string word, string definitionLanguage) {
-            string URL = GetWikitionaryURL(word, definitionLanguage);
+        private async Task<HttpResponseMessage> SendGetWikitionaryHTMLRequest(string word, string definitionLanguage) {
+            string URL = GetWikitionaryAPIURL(word, definitionLanguage);
             var request = new HttpRequestMessage(HttpMethod.Get, URL);
             request.Headers.Add("Api-User-Agent", "thaichibao@gmail.com");
 
@@ -81,12 +86,12 @@ namespace bi_dict_api.Controllers {
             return await client.SendAsync(request);
         }
 
-        private static string GetWikitionaryURL(string word, string definitionLanguage) {
+        private static string GetWikitionaryAPIURL(string word, string definitionLanguage) {
             var code = definitionLanguage switch {
                 "EN" => "en",
                 "VN" => "vi",
                 "JP" => "ja",
-                _ => "NULL"
+                _ => throw new ArgumentException("definitionLanguage is not implemented or unkown", nameof(definitionLanguage))
             };
 
             return $"https://{code}.wiktionary.org/api/rest_v1/page/html/{word}";
