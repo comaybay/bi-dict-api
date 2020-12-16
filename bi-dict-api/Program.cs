@@ -8,7 +8,9 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace bi_dict_api {
+
     public class Program {
+
         public static void Main(string[] args) {
             CreateHostBuilder(args).Build().Run();
         }
