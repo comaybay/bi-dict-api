@@ -14,10 +14,10 @@ namespace bi_dict_api.Others.DefinitionParser.VN {
                 DefinitionSectionFilter = "Danh từ Động từ Nội động từ Tính từ Số từ Lượng từ Phó từ Đại từ Chỉ từ "
                                           + "Trợ từ Thán từ Tình thái từ Quan hệ từ Giới từ Thành ngữ Tục ngữ"
                                           + "Mạo từ hạn định Liên từ Danh từ riêng",
-                EtymologySectionQuery = "section > [id^='Từ_nguyên']",
-                EtymologyPronunciationQuery = "section > [id^='Cách_phát_âm']",
-                InnerSectionAntonymQuery = "section > [id='Trái_nghĩa']",
-                InnerSectionSynonymQuery = "section > [id='Đồng_nghĩa']",
+                EtymologySectionId = "Từ_nguyên",
+                EtymologyPronunciationId = "Cách_phát_âm",
+                InnerSectionAntonymId = "Trái_nghĩa",
+                InnerSectionSynonymId = "Đồng_nghĩa",
                 AntonymTextQuery = "Trái nghĩa",
                 SynonymTextQuery = "Đồng nghĩa",
                 Helper = new DefinitionParserHelperVN(),

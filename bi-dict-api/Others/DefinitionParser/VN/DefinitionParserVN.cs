@@ -12,7 +12,7 @@ namespace bi_dict_api.Others.DefinitionParser.VN {
                 WordLanguage = wordLanguage,
                 DefinitionLanguage = definitionLanguage,
                 EtymologyParser = new EtymologyParserVN(),
-                GlobalPronunciationQuery = "section > [id^='Cách_phát_âm']",
+                GlobalPronunciationId = "Cách_phát_âm",
                 Helper = new DefinitionParserHelperVN(),
             };
         }

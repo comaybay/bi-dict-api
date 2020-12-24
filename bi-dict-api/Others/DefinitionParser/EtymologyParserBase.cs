@@ -11,45 +11,45 @@ namespace bi_dict_api.Others.DefinitionParser {
         protected EtymologyParserOptions Config { get; set; }
 
         public IList<EtymologySection> Parse(HtmlNode languageSection) {
-            var rawEtymologys = languageSection.QuerySelectorAll(Config.EtymologySectionQuery)
+            var rawEtymologySections = languageSection.QuerySelectorAll($"section > [id^='{Config.EtymologySectionId}']")
                                                .Select(elem => elem.ParentNode);
-            var etymologys = new List<EtymologySection>();
+            var EtymologySections = new List<EtymologySection>();
 
-            if (rawEtymologys.Count() > 1) {
-                //Normal Case: Multiple Etymologys (definitions are inside of etymology sections)
-                etymologys.AddRange(rawEtymologys.Select(rawEtymology => ParseEtymology(rawEtymology))
+            if (rawEtymologySections.Count() > 1) {
+                //Normal Case: Multiple EtymologySections (definitions are inside of EtymologySection sections)
+                EtymologySections.AddRange(rawEtymologySections.Select(rawEtymologySection => ParseEtymologySection(rawEtymologySection))
                                                  .ToList());
             }
             else {
-                //Special Case where there is only one etymology (definitions might be outside of etymology section or no etymology section at all)
+                //Special Case where there is only one EtymologySection (definitions might be outside of EtymologySection section or no EtymologySection section at all)
                 //Example: https://en.wiktionary.org/api/rest_v1/page/html/person (definitions are outside)
                 //         https://en.wiktionary.org/api/rest_v1/page/html/ma     (definitions are not outside)
-                var etymology = ParseEtymologySpecialCase(languageSection);
-                bool isEmpty = etymology.Pronunciations.Count == 0 && etymology.InnerSections.Count == 0;
+                var EtymologySection = ParseEtymologySectionSpecialCase(languageSection);
+                bool isEmpty = EtymologySection.Pronunciations.Count == 0 && EtymologySection.InnerSections.Count == 0;
                 if (!isEmpty)
-                    etymologys.Add(etymology);
+                    EtymologySections.Add(EtymologySection);
             }
 
-            return etymologys;
+            return EtymologySections;
         }
 
-        protected virtual EtymologySection ParseEtymologySpecialCase(HtmlNode languageSection) {
-            var rawEtymology = languageSection.QuerySelector(Config.EtymologySectionQuery)?.ParentNode;
+        protected virtual EtymologySection ParseEtymologySectionSpecialCase(HtmlNode languageSection) {
+            var rawEtymologySection = languageSection.QuerySelector($"section > [id^='{Config.EtymologySectionId}']")?.ParentNode;
             return new EtymologySection {
-                Etymology = rawEtymology == null ? null : ParseEtymologyText(rawEtymology),
+                Etymology = rawEtymologySection == null ? null : ParseEtymologyText(rawEtymologySection),
                 Pronunciations = new List<string>(), //no need since these are in globalPronunciations
                 InnerSections = ParseEtymologyInnerSections(languageSection)
             };
         }
 
-        protected virtual EtymologySection ParseEtymology(HtmlNode rawEtymology) => new EtymologySection {
-            Etymology = ParseEtymologyText(rawEtymology),
-            Pronunciations = ParseEtymologyPronunciations(rawEtymology),
-            InnerSections = ParseEtymologyInnerSections(rawEtymology),
+        protected virtual EtymologySection ParseEtymologySection(HtmlNode rawEtymologySection) => new EtymologySection {
+            Etymology = ParseEtymologyText(rawEtymologySection),
+            Pronunciations = ParseEtymologySectionPronunciations(rawEtymologySection),
+            InnerSections = ParseEtymologyInnerSections(rawEtymologySection),
         };
 
-        protected virtual string ParseEtymologyText(HtmlNode rawEtymology) {
-            var pTexts = rawEtymology.Elements("p")?.Select(elem => elem.InnerText);
+        protected virtual string ParseEtymologyText(HtmlNode rawEtymologySection) {
+            var pTexts = rawEtymologySection.Elements("p")?.Select(elem => elem.InnerText);
             return pTexts.Count() switch {
                 0 => null,
                 1 => pTexts.First(),
@@ -57,8 +57,8 @@ namespace bi_dict_api.Others.DefinitionParser {
             };
         }
 
-        protected virtual IList<string> ParseEtymologyPronunciations(HtmlNode rawEtymology) {
-            var pronunciationSection = rawEtymology.QuerySelector(Config.EtymologyPronunciationQuery)
+        protected virtual IList<string> ParseEtymologySectionPronunciations(HtmlNode rawEtymologySection) {
+            var pronunciationSection = rawEtymologySection.QuerySelector($"section > [id^='{Config.EtymologyPronunciationId}']")
                                                    ?.ParentNode;
             if (pronunciationSection is null)
                 return new List<string>();
@@ -66,8 +66,8 @@ namespace bi_dict_api.Others.DefinitionParser {
                 return Config.Helper.ParsePronunciationFrom(pronunciationSection);
         }
 
-        protected virtual IList<EtymologyInnerSection> ParseEtymologyInnerSections(HtmlNode rawEtymology) {
-            var innerSections = rawEtymology.Elements("section")
+        protected virtual IList<EtymologyInnerSection> ParseEtymologyInnerSections(HtmlNode rawEtymologySection) {
+            var innerSections = rawEtymologySection.Elements("section")
                                             ?.Where(rawSection => {
                                                 //select first elem text
                                                 var sectionTitle = rawSection.QuerySelector("*")?.InnerText;
@@ -89,7 +89,7 @@ namespace bi_dict_api.Others.DefinitionParser {
         };
 
         protected virtual IList<string> ParseInnerSectionSynonymSection(HtmlNode rawSection) {
-            var synonyms = rawSection.QuerySelector(Config.InnerSectionSynonymQuery)
+            var synonyms = rawSection.QuerySelector($"section > [id^='{Config.InnerSectionSynonymId}']")
                                      ?.ParentNode
                                      ?.QuerySelectorAll("ul > li")
                                      .Select(elem => elem.InnerText)
@@ -98,8 +98,8 @@ namespace bi_dict_api.Others.DefinitionParser {
             return synonyms ?? new List<string>();
         }
 
-        protected virtual IList<string> ParseInnerSectionAntonymSection(HtmlNode rawEtymology) {
-            var antonyms = rawEtymology.QuerySelector(Config.InnerSectionAntonymQuery)
+        protected virtual IList<string> ParseInnerSectionAntonymSection(HtmlNode rawEtymologySection) {
+            var antonyms = rawEtymologySection.QuerySelector($"section > [id^='{Config.InnerSectionAntonymId}']")
                                        ?.ParentNode
                                        ?.QuerySelectorAll("ul > li")
                                        .Select(elem => elem.InnerText)
@@ -142,11 +142,11 @@ namespace bi_dict_api.Others.DefinitionParser {
         protected virtual List<string> ParseExamples(HtmlNode rawDefinitionSection) {
             var examples = new List<string>();
 
-            static bool isElementContainsExamples(HtmlNode elem) {
+            bool isElementContainsExamples(HtmlNode elem) {
                 var text = elem.InnerText;
                 return text.Length != 0 && //some elements in a wiki have no text (even though they should have).
-                       !elem.InnerText.StartsWith("Synonym") &&
-                       !elem.InnerText.StartsWith("Antonym");
+                       !elem.InnerText.StartsWith(Config.SynonymTextQuery) &&
+                       !elem.InnerText.StartsWith(Config.AntonymTextQuery);
             }
 
             //examples without citation

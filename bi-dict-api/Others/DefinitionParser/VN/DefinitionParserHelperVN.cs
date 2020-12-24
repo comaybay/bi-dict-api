@@ -12,8 +12,7 @@ namespace bi_dict_api.Others.DefinitionParser.VN {
             var pronunciations = base.ParsePronunciationFrom(pronunciationSection);
             var others = pronunciationSection.QuerySelectorAll("li > span > [title='Wiktionary:IPA']")
                                              .Select(span => span.InnerText);
-            pronunciations.Concat(others);
-            return pronunciations;
+            return pronunciations.Concat(others).ToList();
         }
 
         public override string GetLanguageSectionId(string language) {

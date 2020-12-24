@@ -10,6 +10,6 @@ namespace bi_dict_api.Models {
         public string WordLanguage { get; set; }
         public string DefinitionLanguage { get; set; }
         public IList<string> GlobalPronunciations { get; set; }
-        public IList<EtymologySection> Etymologys { get; set; }
+        public IList<EtymologySection> Etymologies { get; set; }
     }
 }

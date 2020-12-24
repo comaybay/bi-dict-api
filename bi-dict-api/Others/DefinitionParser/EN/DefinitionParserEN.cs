@@ -12,7 +12,7 @@ namespace bi_dict_api.Others.DefinitionParser.EN {
             Config = new DefinitionParserOptions() {
                 DefinitionLanguage = definitionLanguage,
                 EtymologyParser = new EtymologyParserEN(),
-                GlobalPronunciationQuery = "section > [id^='Pronunciation']",
+                GlobalPronunciationId = "Pronunciation",
                 WordLanguage = wordLanguage,
                 Helper = new DefinitionParserHelperEN(),
             };

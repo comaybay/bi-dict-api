@@ -7,10 +7,10 @@
                 DefinitionSectionFilter = "Adjective Adverb Ambiposition Article "
                                           + "Circumposition Classifier Conjunction Contraction Counter Determiner Ideophone Interjection "
                                           + "Noun Numeral Participle Particle Postposition Preposition Pronoun Proper noun Verb",
-                EtymologyPronunciationQuery = "section > [id^='Pronunciation']",
-                EtymologySectionQuery = "section > [id^='Etymology']",
-                InnerSectionAntonymQuery = "section > [id^='Antonym']",
-                InnerSectionSynonymQuery = "section > [id^='Synonym']",
+                EtymologyPronunciationId = "Pronunciation",
+                EtymologySectionId = "Etymology",
+                InnerSectionAntonymId = "Antonym",
+                InnerSectionSynonymId = "Synonym",
                 AntonymTextQuery = "Antonym",
                 SynonymTextQuery = "Synonym",
                 Helper = new DefinitionParserHelperEN(),

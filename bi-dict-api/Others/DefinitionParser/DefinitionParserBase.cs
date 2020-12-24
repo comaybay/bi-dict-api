@@ -25,7 +25,7 @@ namespace bi_dict_api.Others.DefinitionParser {
                 WordLanguage = Config.WordLanguage,
                 DefinitionLanguage = Config.DefinitionLanguage,
                 GlobalPronunciations = ParseGlobalPronunciation(),
-                Etymologys = Config.EtymologyParser.Parse(LanguageSection),
+                Etymologies = Config.EtymologyParser.Parse(LanguageSection),
             };
 
             return definition;
@@ -42,7 +42,7 @@ namespace bi_dict_api.Others.DefinitionParser {
 
         private IList<string> ParseGlobalPronunciation() {
             //check wheter such section exists
-            var globalaPronunciationSection = LanguageSection.QuerySelector(Config.GlobalPronunciationQuery)
+            var globalaPronunciationSection = LanguageSection.QuerySelector($"section > [id^='{Config.GlobalPronunciationId}']")
                                                              ?.ParentNode;
 
             if (globalaPronunciationSection is null)
