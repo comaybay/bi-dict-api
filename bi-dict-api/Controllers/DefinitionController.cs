@@ -18,10 +18,10 @@ namespace bi_dict_api.Controllers {
     [Route("api/[controller]")]
     [ApiController]
     public class DefinitionController : ControllerBase {
-        private readonly IHttpClientFactory _clientFactory;
+        private readonly IHttpClientFactory clientFactory;
 
         public DefinitionController(IHttpClientFactory clientFactory) {
-            _clientFactory = clientFactory;
+            this.clientFactory = clientFactory;
         }
 
         /// <summary>Gets definition of a given word in English.</summary>
@@ -48,7 +48,7 @@ namespace bi_dict_api.Controllers {
             return DefinitionResponse(definition);
         }
 
-        private string FormatWord(string word) => word.Trim().ToLower().Replace(' ', '_');
+        private static string FormatWord(string word) => word.Trim().ToLower().Replace(' ', '_');
 
         private ActionResult DefinitionResponse(Definition definition) => definition is null ? NotFound() : Ok(definition);
 
@@ -72,8 +72,8 @@ namespace bi_dict_api.Controllers {
                 return null;
 
             var html = await response.Content.ReadAsStringAsync();
-            var definitionParser = new DefinitionParserFactory(wordLanguage, definitionLanguage).Create();
-            Definition definition = definitionParser.ParseFromWikitionaryHtml(html);
+            var definitionParser = new DefinitionParserFactory(definitionLanguage).Create();
+            Definition definition = definitionParser.FromWikitionaryHtml(html, wordLanguage);
             return definition;
         }
 
@@ -82,7 +82,7 @@ namespace bi_dict_api.Controllers {
             var request = new HttpRequestMessage(HttpMethod.Get, URL);
             request.Headers.Add("Api-User-Agent", "thaichibao@gmail.com");
 
-            var client = _clientFactory.CreateClient();
+            var client = clientFactory.CreateClient();
             return await client.SendAsync(request);
         }
 

@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 namespace bi_dict_api.Others.DefinitionParser {
 
-    public interface IEtymologyParser {
+    public interface IWikiEtymologyParser {
 
-        public IList<EtymologySection> Parse(HtmlNode LanguageSection);
+        public IEnumerable<EtymologySection> Parse(HtmlNode LanguageSection);
     }
 }

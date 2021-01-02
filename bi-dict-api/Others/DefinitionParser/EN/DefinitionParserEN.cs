@@ -6,16 +6,19 @@ using System.Threading.Tasks;
 
 namespace bi_dict_api.Others.DefinitionParser.EN {
 
-    public class DefinitionParserEN : DefinitionParserBase {
+    public class DefinitionParserEN : IDefinitionParser {
+        private readonly WikiParserBase wikiParser;
 
-        public DefinitionParserEN(string wordLanguage, string definitionLanguage) {
-            Config = new DefinitionParserOptions() {
-                DefinitionLanguage = definitionLanguage,
-                EtymologyParser = new EtymologyParserEN(),
+        public DefinitionParserEN() {
+            var config = new WikiParserOptions() {
                 GlobalPronunciationId = "Pronunciation",
-                WordLanguage = wordLanguage,
-                Helper = new DefinitionParserHelperEN(),
+                DefinitionLanguage = "EN"
             };
+            wikiParser = new WikiParserEN(config, new WikiEtymologyParserEN(), new WikiParserHelperEN());
+        }
+
+        public Definition FromWikitionaryHtml(string html, string wordLanguage) {
+            return wikiParser.Parse(html, wordLanguage);
         }
     }
 }

@@ -8,8 +8,8 @@ namespace bi_dict_api.Models {
     public class EtymologyInnerSection {
         public string PartOfSpeech { get; set; }
         public string Inflection { get; set; }
-        public IList<string> Synonyms { get; set; }
-        public IList<string> Antonyms { get; set; }
-        public IList<DefinitionSection> DefinitionSections { get; set; }
+        public IEnumerable<string> Synonyms { get; set; }
+        public IEnumerable<string> Antonyms { get; set; }
+        public IEnumerable<DefinitionSection> DefinitionSections { get; set; }
     }
 }

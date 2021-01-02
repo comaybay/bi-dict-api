@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace bi_dict_api.Others.DefinitionParser.VN {
 
-    internal class DefinitionParserHelperVN : DefinitionParserHelperBase {
+    internal class WikiParserHelperVN : WikiParserHelperBase {
 
         public override IList<string> ParsePronunciationFrom(HtmlNode pronunciationSection) {
             var pronunciations = base.ParsePronunciationFrom(pronunciationSection);

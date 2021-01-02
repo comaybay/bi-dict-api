@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace bi_dict_api.Others.DefinitionParser {
 
-    internal class DefinitionParserHelperEN : DefinitionParserHelperBase {
+    internal class WikiParserHelperEN : WikiParserHelperBase {
 
         public override string GetLanguageSectionId(string language) {
             return language switch {

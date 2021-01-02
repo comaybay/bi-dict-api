@@ -8,24 +8,30 @@ using System.Threading.Tasks;
 
 namespace bi_dict_api.Others.DefinitionParser {
 
-    public abstract class DefinitionParserBase : IDefinitionParser {
+    public abstract class WikiParserBase {
         private HtmlDocument Document { get; set; }
         private HtmlNode LanguageSection { get; set; }
+        private readonly IWikiEtymologyParser etymologyParser;
+        private readonly IWikiParserHelper helper;
+        private readonly WikiParserOptions config;
 
-        protected DefinitionParserOptions Config { get; init; }
+        public WikiParserBase(WikiParserOptions config, IWikiEtymologyParser etymologyParser, IWikiParserHelper helper) {
+            this.config = config;
+            this.etymologyParser = etymologyParser;
+            this.helper = helper;
+        }
 
-        public Definition ParseFromWikitionaryHtml(string html) {
-            Initialization(html, Config.WordLanguage);
-
+        public Definition Parse(string html, string wordLanguage) {
+            Initialization(html, wordLanguage);
             if (LanguageSection is null)
                 return null;
 
             var definition = new Definition {
                 Word = ParseNameOfWord(),
-                WordLanguage = Config.WordLanguage,
-                DefinitionLanguage = Config.DefinitionLanguage,
+                WordLanguage = wordLanguage,
+                DefinitionLanguage = config.DefinitionLanguage,
                 GlobalPronunciations = ParseGlobalPronunciation(),
-                Etymologies = Config.EtymologyParser.Parse(LanguageSection),
+                Etymologies = etymologyParser.Parse(LanguageSection),
             };
 
             return definition;
@@ -34,21 +40,21 @@ namespace bi_dict_api.Others.DefinitionParser {
         private void Initialization(string html, string wordLanguage) {
             Document = new HtmlDocument();
             Document.LoadHtml(html);
-            var id = Config.Helper.GetLanguageSectionId(wordLanguage);
+            var id = helper.GetLanguageSectionId(wordLanguage);
             LanguageSection = Document.DocumentNode.QuerySelector($"section > [id='{id}']")?.ParentNode;
         }
 
         private string ParseNameOfWord() => Document.DocumentNode.SelectSingleNode("//head/title").InnerText;
 
-        private IList<string> ParseGlobalPronunciation() {
+        protected IList<string> ParseGlobalPronunciation() {
             //check wheter such section exists
-            var globalaPronunciationSection = LanguageSection.QuerySelector($"section > [id^='{Config.GlobalPronunciationId}']")
+            var globalaPronunciationSection = LanguageSection.QuerySelector($"section > [id^='{config.GlobalPronunciationId}']")
                                                              ?.ParentNode;
 
             if (globalaPronunciationSection is null)
                 return new List<string>();
             else
-                return Config.Helper.ParsePronunciationFrom(globalaPronunciationSection);
+                return helper.ParsePronunciationFrom(globalaPronunciationSection);
         }
     }
 }
