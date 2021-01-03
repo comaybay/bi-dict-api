@@ -66,18 +66,18 @@ namespace bi_dict_api.Controllers {
         }
 
         private async Task<Definition> Get(string word, string wordLanguage, string definitionLanguage) {
-            var response = await SendGetWikitionaryHTMLRequest(word, definitionLanguage);
+            var response = await SendWikitionaryGetRequest(word, definitionLanguage);
             //word not found on wikitionary
             if (!response.IsSuccessStatusCode)
                 return null;
 
             var html = await response.Content.ReadAsStringAsync();
-            var definitionParser = new DefinitionParserFactory(definitionLanguage).Create();
-            Definition definition = definitionParser.FromWikitionaryHtml(html, wordLanguage);
+            var definitionParser = DefinitionParserFactory.Create(definitionLanguage);
+            var definition = definitionParser.FromWikitionaryHtml(html, wordLanguage);
             return definition;
         }
 
-        private async Task<HttpResponseMessage> SendGetWikitionaryHTMLRequest(string word, string definitionLanguage) {
+        private async Task<HttpResponseMessage> SendWikitionaryGetRequest(string word, string definitionLanguage) {
             string URL = GetWikitionaryAPIURL(word, definitionLanguage);
             var request = new HttpRequestMessage(HttpMethod.Get, URL);
             request.Headers.Add("Api-User-Agent", "thaichibao@gmail.com");

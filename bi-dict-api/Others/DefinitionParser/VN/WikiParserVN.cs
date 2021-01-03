@@ -7,7 +7,18 @@ namespace bi_dict_api.Others.DefinitionParser.VN {
 
     public class WikiParserVN : WikiParserBase {
 
-        public WikiParserVN(WikiParserOptions config, IWikiEtymologyParser etymologyParser, IWikiParserHelper helper)
-            : base(config, etymologyParser, helper) { }
+        private static readonly WikiParserOptions config = new WikiParserOptions() {
+            GlobalPronunciationId = "Cách_phát_âm",
+            DefinitionLanguage = "VN"
+        };
+
+        private static readonly IWikiEtymologyParser etymologyParser = new WikiEtymologyParserVN();
+        private static readonly IWikiParserHelper helper = new WikiParserHelperVN();
+
+        public WikiParserVN() {
+            Helper = helper;
+            Config = config;
+            EtymologyParser = etymologyParser;
+        }
     }
 }

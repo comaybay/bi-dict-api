@@ -2,7 +2,18 @@
 
     internal class WikiParserEN : WikiParserBase {
 
-        public WikiParserEN(WikiParserOptions config, IWikiEtymologyParser etymologyParser, IWikiParserHelper helper)
-            : base(config, etymologyParser, helper) { }
+        private static readonly WikiParserOptions config = new WikiParserOptions() {
+            GlobalPronunciationId = "Pronunciation",
+            DefinitionLanguage = "EN"
+        };
+
+        private static readonly IWikiEtymologyParser etymologyParser = new WikiEtymologyParserEN();
+        private static readonly IWikiParserHelper helper = new WikiParserHelperEN();
+
+        public WikiParserEN() {
+            Helper = helper;
+            Config = config;
+            EtymologyParser = etymologyParser;
+        }
     }
 }
