@@ -31,5 +31,8 @@ namespace bi_dict_api.Others.DefinitionParser {
         public HtmlNode QuerySelectorDirectChildren(HtmlNode elem, string query) {
             return elem.ParentNode.QuerySelector($"[id='{elem.Id}'] > {query}");
         }
+
+        protected virtual ArgumentException LanguageIDNotImplementedException(string language)
+            => new ArgumentException("not implemented or unknown ISO language", nameof(language));
     }
 }

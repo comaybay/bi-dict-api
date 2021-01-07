@@ -38,7 +38,7 @@ namespace bi_dict_api.Others.DefinitionParser {
             var rawTexts = GetRawEtymologyTexts(rawEtymologySection);
             var rawInnerSections = GetRawEtymologyInnerSections(languageSection);
             return new EtymologySection {
-                EtymologyTexts = rawTexts.Select(raw => ParseEtymologyText(raw)).ToArray(),
+                EtymologyTexts = rawTexts.Select(raw => ParseEtymologyText(raw)),
                 Pronunciations = Array.Empty<string>(), //no need since these are in globalPronunciations
                 InnerSections = rawInnerSections.Select(rawSection => ParseEtymologyInnerSection(rawSection)),
             };
@@ -52,12 +52,18 @@ namespace bi_dict_api.Others.DefinitionParser {
                                   .Where(rawSection => {
                                       //select first elem text
                                       var sectionTitle = GetEtymologyInnerSectionTitle(rawSection);
-                                      //if section title contains one of these words
-                                      return Config.DefinitionSectionFilter.Contains(sectionTitle ?? "NULL");
+                                      if (String.IsNullOrEmpty(sectionTitle))
+                                          return false;
+                                      else
+                                          //if section title contains one of these words
+                                          return Config.DefinitionSectionFilter.Contains(sectionTitle);
                                   });
 
-        private static string GetEtymologyInnerSectionTitle(HtmlNode rawSection)
-            => rawSection.Elements().FirstOrDefault().InnerText;
+        private string GetEtymologyInnerSectionTitle(HtmlNode rawSection) {
+            //for some reason querySelector("h6 h5 h4 h3 h2 h1") doesn't work, had to settle with this.
+            string f(string q) => Helper.QuerySelectorDirectChildren(rawSection, q)?.InnerText;
+            return f("h6") ?? f("h5") ?? f("h4") ?? f("h3") ?? f("h2") ?? f("h1");
+        }
 
         protected virtual EtymologySection ParseEtymologySection(HtmlNode rawEtymologySection) {
             var rawEtymologyTexts = GetRawEtymologyTexts(rawEtymologySection);

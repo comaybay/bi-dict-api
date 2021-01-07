@@ -17,10 +17,10 @@ namespace bi_dict_api.Others.DefinitionParser.VN {
 
         public override string GetLanguageSectionId(string language) {
             return language switch {
-                "EN" => "Tiếng_Anh",
-                "VN" => "Tiếng_Việt",
-                "JP" => "Tiếng_Nhật",
-                _ => throw new ArgumentException("not implemented or unkown language", nameof(language))
+                "en" => "Tiếng_Anh",
+                "vi" => "Tiếng_Việt",
+                "ja" => "Tiếng_Nhật",
+                _ => throw LanguageIDNotImplementedException(language),
             };
         }
     }

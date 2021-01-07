@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 namespace bi_dict_api.Others.DefinitionParser {
 
     public interface IWikiParser {
+        public string PageLanguage { get; }
 
-        public Definition Parse(string html, string wordLanguage);
+        public Definition Parse(string html);
     }
 }

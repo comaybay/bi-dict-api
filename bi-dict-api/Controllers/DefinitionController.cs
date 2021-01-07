@@ -26,75 +26,41 @@ namespace bi_dict_api.Controllers {
 
         /// <summary>Gets definition of a given word in English.</summary>
         /// <response code="200"> Returns definition successfully</response>
-        /// <response code="404">Unkown word or language</response>
-        [HttpGet("EN/{word}/{wordLanguage}")]
+        /// <response code="404">Language not implemented or invalid</response>
+        [HttpGet("en/{word}/{wordLanguage}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<Definition>> GetEN(string word, string wordLanguage) {
-            word = FormatWord(word);
-            var definition = await GetOrNull(word, wordLanguage, "EN");
-            return DefinitionResponse(definition);
-        }
+        public async Task<ActionResult<Definition>> GetEN(string word, string wordLanguage)
+           => await CreateResponse("en", word, wordLanguage);
 
         /// <summary>Gets definition of a given word in Vietnamese.</summary>
         /// <response code="200"> Returns definition successfully</response>
-        /// <response code="404">Unkown word or language</response>
-        [HttpGet("VN/{word}/{wordLanguage}")]
+        /// <response code="404">Language not implemented or invalid</response>
+        [HttpGet("vi/{word}/{wordLanguage}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<Definition>> GetVN(string word, string wordLanguage) {
-            word = FormatWord(word);
-            var definition = await GetOrNull(word, wordLanguage, "VN");
-            return DefinitionResponse(definition);
-        }
+        public async Task<ActionResult<Definition>> GetVN(string word, string wordLanguage)
+            => await CreateResponse("vi", word, wordLanguage);
 
-        private static string FormatWord(string word) => word.Trim().ToLower().Replace(' ', '_');
-
-        private ActionResult DefinitionResponse(Definition definition) => definition is null ? NotFound() : Ok(definition);
-
-        private async Task<Definition> GetOrNull(string word, string wordLanguage, string definitionLanguage) {
+        private async Task<ActionResult> CreateResponse(string definitionLanguage, string word, string wordLanguage) {
             try {
-                //if definition is null => can't parse wikitionary page (page doesn't contain section of wordLanguage)
-                return await Get(word, wordLanguage, definitionLanguage);
+                var definition = await Get(definitionLanguage, word, wordLanguage);
+                return Ok(definition);
             }
             catch (ArgumentException e) {
                 Console.WriteLine(e.Message);
                 Console.WriteLine(e.StackTrace);
-                //given wordLanguage or definitionLanguage is not implemented or unknown
-                return null;
+                return NotFound();
             }
         }
 
-        private async Task<Definition> Get(string word, string wordLanguage, string definitionLanguage) {
-            var response = await SendWikitionaryGetRequest(word, definitionLanguage);
-            //word not found on wikitionary
-            if (!response.IsSuccessStatusCode)
-                return null;
-
-            var html = await response.Content.ReadAsStringAsync();
-            var definitionParser = DefinitionParserFactory.Create(definitionLanguage);
-            var definition = definitionParser.FromWikitionaryHtml(html, wordLanguage);
+        private async Task<Definition> Get(string definitionLanguage, string word, string wordLanguage) {
+            word = FormatWord(word);
+            var definitionParser = DefinitionProviderFactory.Create(clientFactory, definitionLanguage, wordLanguage);
+            var definition = await definitionParser.Get(word);
             return definition;
         }
 
-        private async Task<HttpResponseMessage> SendWikitionaryGetRequest(string word, string definitionLanguage) {
-            string URL = GetWikitionaryAPIURL(word, definitionLanguage);
-            var request = new HttpRequestMessage(HttpMethod.Get, URL);
-            request.Headers.Add("Api-User-Agent", "thaichibao@gmail.com");
-
-            var client = clientFactory.CreateClient();
-            return await client.SendAsync(request);
-        }
-
-        private static string GetWikitionaryAPIURL(string word, string definitionLanguage) {
-            var code = definitionLanguage switch {
-                "EN" => "en",
-                "VN" => "vi",
-                "JP" => "ja",
-                _ => throw new ArgumentException("definitionLanguage is not implemented or unkown", nameof(definitionLanguage))
-            };
-
-            return $"https://{code}.wiktionary.org/api/rest_v1/page/html/{word}";
-        }
+        private static string FormatWord(string word) => word.Trim().ToLower().Replace(' ', '_');
     }
 }
