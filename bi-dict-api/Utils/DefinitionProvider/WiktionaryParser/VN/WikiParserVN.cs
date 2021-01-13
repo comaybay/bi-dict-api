@@ -1,5 +1,6 @@
-﻿namespace bi_dict_api.Others.DefinitionParser.VN
+﻿namespace bi_dict_api.Utils.DefinitionProvider.WiktionaryParser.VN
 {
+    using Base;
 
     public class WikiParserVN : WikiParserBase
     {

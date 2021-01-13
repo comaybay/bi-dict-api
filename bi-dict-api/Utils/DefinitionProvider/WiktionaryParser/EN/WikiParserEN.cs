@@ -1,5 +1,7 @@
-﻿namespace bi_dict_api.Others.DefinitionParser.EN
+﻿namespace bi_dict_api.Utils.DefinitionProvider.WiktionaryParser.EN
 {
+    using Base;
+
     internal class WikiParserEN : WikiParserBase
     {
         private static readonly IWikiEtymologyParser etymologyParser = new WikiEtymologyParserEN();

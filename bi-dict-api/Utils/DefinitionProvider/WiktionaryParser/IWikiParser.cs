@@ -1,7 +1,6 @@
-﻿using bi_dict_api.Models;
-
-namespace bi_dict_api.Others.DefinitionParser
+﻿namespace bi_dict_api.Utils.DefinitionProvider.WiktionaryParser
 {
+    using Models;
 
     public interface IWikiParser
     {

@@ -1,14 +1,13 @@
-﻿using Fizzler.Systems.HtmlAgilityPack;
-using HtmlAgilityPack;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace bi_dict_api.Others.DefinitionParser.VN
+﻿namespace bi_dict_api.Utils.DefinitionProvider.WiktionaryParser.VN
 {
+    using Base;
+    using Fizzler.Systems.HtmlAgilityPack;
+    using HtmlAgilityPack;
+    using System.Collections.Generic;
+    using System.Linq;
 
     internal class WikiParserHelperVN : WikiParserHelperBase
     {
-
         public override IList<string> ParsePronunciationFrom(HtmlNode pronunciationSection)
         {
             var pronunciations = base.ParsePronunciationFrom(pronunciationSection);

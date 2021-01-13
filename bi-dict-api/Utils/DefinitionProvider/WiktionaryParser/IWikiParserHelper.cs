@@ -1,13 +1,12 @@
-﻿using HtmlAgilityPack;
-using System.Collections.Generic;
-
-namespace bi_dict_api.Others.DefinitionParser
+﻿namespace bi_dict_api.Utils.DefinitionProvider.WiktionaryParser
 {
+    using HtmlAgilityPack;
+    using System.Collections.Generic;
 
     public interface IWikiParserHelper
     {
 
-        public IList<string> ParsePronunciationFrom(HtmlNode PronunciationSection);
+        public IEnumerable<string> ParsePronunciationFrom(HtmlNode PronunciationSection);
 
         public string GetLanguageSectionId(string language);
 

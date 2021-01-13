@@ -1,24 +1,20 @@
-﻿using Fizzler.Systems.HtmlAgilityPack;
-using HtmlAgilityPack;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-
-namespace bi_dict_api.Others.DefinitionParser
+﻿namespace bi_dict_api.Utils.DefinitionProvider.WiktionaryParser.Base
 {
+    using Fizzler.Systems.HtmlAgilityPack;
+    using HtmlAgilityPack;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text.RegularExpressions;
 
     public abstract class WikiParserHelperBase : IWikiParserHelper
     {
 
-        public virtual IList<string> ParsePronunciationFrom(HtmlNode pronunciationSection)
-        {
-            return pronunciationSection.QuerySelectorAll("ul > li")
-                          .Select(li => li.QuerySelector("span.IPA")?.InnerText)
-                          .Where(pronunciation => pronunciation != null
-                                 && pronunciation.StartsWith('/') /*avoid rhymes*/)
-                          .ToList();
-        }
+        public virtual IEnumerable<string> ParsePronunciationFrom(HtmlNode pronunciationSection)
+         => pronunciationSection.QuerySelectorAll("ul > li")
+                                .Select(li => li.QuerySelector("span.IPA")?.InnerText ?? "")
+                                .Where(pronunciation =>
+                        pronunciation != null && pronunciation.StartsWith('/') /*avoid rhymes*/);
 
         public virtual string RemoveCiteNotes(string text)
         {

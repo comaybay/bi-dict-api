@@ -1,16 +1,16 @@
-﻿using bi_dict_api.Models;
-using Fizzler.Systems.HtmlAgilityPack;
-using HtmlAgilityPack;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace bi_dict_api.Others.DefinitionParser
+﻿namespace bi_dict_api.Utils.DefinitionProvider.WiktionaryParser.Base
 {
+    using Fizzler.Systems.HtmlAgilityPack;
+    using HtmlAgilityPack;
+    using Models;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     public abstract class WikiEtymologyParserBase : IWikiEtymologyParser
     {
-        protected IWikiParserHelper Helper { get; init; }
-        protected WikiEtymologyParserOptions Config { get; init; }
+        protected IWikiParserHelper Helper { get; init; } = default!;
+        protected WikiEtymologyParserOptions Config { get; init; } = default!;
         static private readonly HtmlNode dummyElement = new HtmlDocument().CreateElement("div");
 
         public virtual IEnumerable<EtymologySection> Parse(HtmlNode languageSection)
@@ -68,7 +68,7 @@ namespace bi_dict_api.Others.DefinitionParser
         private string GetEtymologyInnerSectionTitle(HtmlNode rawSection)
         {
             //for some reason querySelector("h6 h5 h4 h3 h2 h1") doesn't work, had to settle with this.
-            string f(string q) => Helper.QuerySelectorDirectChildren(rawSection, q)?.InnerText;
+            string f(string q) => Helper.QuerySelectorDirectChildren(rawSection, q)?.InnerText ?? "";
             return f("h6") ?? f("h5") ?? f("h4") ?? f("h3") ?? f("h2") ?? f("h1");
         }
 
@@ -121,7 +121,7 @@ namespace bi_dict_api.Others.DefinitionParser
 
         private HtmlNode GetRawInnerSectionSynonymSection(HtmlNode rawSection)
             => rawSection.QuerySelector($"section > [id^='{Config.InnerSectionSynonymId}']")
-                        ?.ParentNode;
+                        ?.ParentNode ?? dummyElement;
 
         protected virtual IEnumerable<string> ParseInnerSectionAntonymSection(HtmlNode rawAntonymSection)
             => rawAntonymSection.QuerySelectorAll("ul > li")
@@ -130,7 +130,7 @@ namespace bi_dict_api.Others.DefinitionParser
 
         protected virtual HtmlNode GetRawInnerSectionAntonymSection(HtmlNode rawEtymologySection)
             => rawEtymologySection.QuerySelector($"section > [id^='{Config.InnerSectionAntonymId}']")
-                                  ?.ParentNode;
+                                  ?.ParentNode ?? dummyElement;
 
         protected virtual IEnumerable<HtmlNode> GetRawDefinitionSections(HtmlNode rawInnerSection)
             => Helper.QuerySelectorAllDirectChildren(rawInnerSection, "ol > li");

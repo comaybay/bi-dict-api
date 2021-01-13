@@ -1,9 +1,9 @@
-﻿using bi_dict_api.Models;
-using System.Net.Http;
-using System.Threading.Tasks;
-
-namespace bi_dict_api.Others.DefinitionParser
+﻿namespace bi_dict_api.Utils.DefinitionProvider
 {
+    using Models;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+    using WiktionaryParser;
 
     public class DefinitionProviderWiki : IDefinitionProvider
     {

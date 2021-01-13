@@ -5,10 +5,10 @@ namespace bi_dict_api.Models
 
     public class EtymologyInnerSection
     {
-        public string PartOfSpeech { get; set; }
-        public string Inflection { get; set; }
-        public IEnumerable<string> Synonyms { get; set; }
-        public IEnumerable<string> Antonyms { get; set; }
-        public IEnumerable<DefinitionSection> DefinitionSections { get; set; }
+        public string PartOfSpeech { get; set; } = default!;
+        public string Inflection { get; set; } = default!;
+        public IEnumerable<string> Synonyms { get; set; } = default!;
+        public IEnumerable<string> Antonyms { get; set; } = default!;
+        public IEnumerable<DefinitionSection> DefinitionSections { get; set; } = default!;
     }
 }

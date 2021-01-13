@@ -1,17 +1,16 @@
-﻿using bi_dict_api.Models;
-using Fizzler.Systems.HtmlAgilityPack;
-using HtmlAgilityPack;
-using System;
-using System.Collections.Generic;
-
-namespace bi_dict_api.Others.DefinitionParser
+﻿namespace bi_dict_api.Utils.DefinitionProvider.WiktionaryParser.Base
 {
+    using Fizzler.Systems.HtmlAgilityPack;
+    using HtmlAgilityPack;
+    using Models;
+    using System;
+    using System.Collections.Generic;
 
     public abstract class WikiParserBase : IWikiParser
     {
-        protected IWikiEtymologyParser EtymologyParser { get; init; }
-        protected IWikiParserHelper Helper { get; init; }
-        protected WikiParserOptions Config { get; init; }
+        protected IWikiEtymologyParser EtymologyParser { get; init; } = default!;
+        protected IWikiParserHelper Helper { get; init; } = default!;
+        protected WikiParserOptions Config { get; init; } = default!;
         public string PageLanguage { get => Config.PageLanguage; }
 
         public Definition Parse(string html)

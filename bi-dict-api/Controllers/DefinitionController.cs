@@ -1,5 +1,5 @@
 ﻿using bi_dict_api.Models;
-using bi_dict_api.Others;
+using bi_dict_api.Utils.DefinitionProvider;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;

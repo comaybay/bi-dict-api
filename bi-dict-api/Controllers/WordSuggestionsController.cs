@@ -1,5 +1,4 @@
 ﻿using bi_dict_api.Models;
-using bi_dict_api.Utils.WordSuggestions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -9,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace bi_dict_api.Controllers
 {
+    using Utils.WordSuggestionsProvider;
 
     [Produces("application/json")]
     [Route("api/[controller]")]

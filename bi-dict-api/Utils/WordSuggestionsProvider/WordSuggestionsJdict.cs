@@ -1,13 +1,12 @@
-﻿using bi_dict_api.Models;
-using bi_dict_api.Utils.WordSuggestions.Models;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text.Json;
-using System.Threading.Tasks;
-
-namespace bi_dict_api.Utils.WordSuggestions
+﻿namespace bi_dict_api.Utils.WordSuggestionsProvider
 {
+    using bi_dict_api.Models;
+    using Models;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net.Http;
+    using System.Text.Json;
+    using System.Threading.Tasks;
 
     //using https://jdict.net/api/v1/ API
     public class WordSuggestionsJdict : IWordSuggestions
@@ -37,7 +36,7 @@ namespace bi_dict_api.Utils.WordSuggestions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             };
-            return JsonSerializer.Deserialize<JdictSuggestions>(jsonText, options);
+            return JsonSerializer.Deserialize<JdictSuggestions>(jsonText, options) ?? new JdictSuggestions();
         }
 
         private static IEnumerable<WordSuggestion> ParseSuggestions(JdictSuggestions jdictSuggestions)

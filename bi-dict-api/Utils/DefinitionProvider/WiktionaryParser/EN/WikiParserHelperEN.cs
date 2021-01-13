@@ -1,5 +1,6 @@
-﻿namespace bi_dict_api.Others.DefinitionParser
+﻿namespace bi_dict_api.Utils.DefinitionProvider.WiktionaryParser.EN
 {
+    using Base;
 
     internal class WikiParserHelperEN : WikiParserHelperBase
     {

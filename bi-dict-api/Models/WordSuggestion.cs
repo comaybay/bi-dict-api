@@ -3,7 +3,7 @@
 
     public class WordSuggestion
     {
-        public string Word { get; set; }
-        public string Meaning { get; set; }
+        public string Word { get; set; } = default!;
+        public string Meaning { get; set; } = default!;
     }
 }
