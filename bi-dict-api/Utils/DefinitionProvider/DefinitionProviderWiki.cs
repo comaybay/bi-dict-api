@@ -1,22 +1,23 @@
 ﻿using bi_dict_api.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace bi_dict_api.Others.DefinitionParser {
+namespace bi_dict_api.Others.DefinitionParser
+{
 
-    public class DefinitionProviderWiki : IDefinitionProvider {
+    public class DefinitionProviderWiki : IDefinitionProvider
+    {
         private readonly IWikiParser wikiParser;
         private readonly IHttpClientFactory clientFactory;
 
-        public DefinitionProviderWiki(IHttpClientFactory clientFactory, IWikiParser wikiParser) {
+        public DefinitionProviderWiki(IHttpClientFactory clientFactory, IWikiParser wikiParser)
+        {
             this.clientFactory = clientFactory;
             this.wikiParser = wikiParser;
         }
 
-        public async Task<Definition> Get(string word) {
+        public async Task<Definition> Get(string word)
+        {
             var response = await SendPageHtmlRequest(word);
             if (!response.IsSuccessStatusCode)
                 throw new HttpRequestException($"Failed to get wiktionary page content.");
@@ -25,7 +26,8 @@ namespace bi_dict_api.Others.DefinitionParser {
             return wikiParser.Parse(html);
         }
 
-        private async Task<HttpResponseMessage> SendPageHtmlRequest(string word) {
+        private async Task<HttpResponseMessage> SendPageHtmlRequest(string word)
+        {
             var definitionLanguage = wikiParser.PageLanguage;
             string URL = $"https://{definitionLanguage}.wiktionary.org/api/rest_v1/page/html/{word}";
 

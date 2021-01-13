@@ -1,8 +1,8 @@
-﻿using HtmlAgilityPack;
+﻿namespace bi_dict_api.Others.DefinitionParser
+{
 
-namespace bi_dict_api.Others.DefinitionParser {
-
-    public class WikiEtymologyParserOptions {
+    public class WikiEtymologyParserOptions
+    {
         public string EtymologySectionId { get; set; }
         public string EtymologyPronunciationId { get; set; }
         public string DefinitionSectionFilter { get; set; }

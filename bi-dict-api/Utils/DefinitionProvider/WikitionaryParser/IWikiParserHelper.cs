@@ -1,9 +1,11 @@
 ﻿using HtmlAgilityPack;
 using System.Collections.Generic;
 
-namespace bi_dict_api.Others.DefinitionParser {
+namespace bi_dict_api.Others.DefinitionParser
+{
 
-    public interface IWikiParserHelper {
+    public interface IWikiParserHelper
+    {
 
         public IList<string> ParsePronunciationFrom(HtmlNode PronunciationSection);
 

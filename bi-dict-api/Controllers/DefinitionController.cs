@@ -3,24 +3,23 @@ using bi_dict_api.Others;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Net.Http;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace bi_dict_api.Controllers {
+namespace bi_dict_api.Controllers
+{
 
     [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
-    public class DefinitionController : ControllerBase {
+    public class DefinitionController : ControllerBase
+    {
         private readonly IHttpClientFactory clientFactory;
 
-        public DefinitionController(IHttpClientFactory clientFactory) {
+        public DefinitionController(IHttpClientFactory clientFactory)
+        {
             this.clientFactory = clientFactory;
         }
 
@@ -42,19 +41,23 @@ namespace bi_dict_api.Controllers {
         public async Task<ActionResult<Definition>> GetVN(string word, string wordLanguage)
             => await CreateResponse("vi", word, wordLanguage);
 
-        private async Task<ActionResult> CreateResponse(string definitionLanguage, string word, string wordLanguage) {
-            try {
+        private async Task<ActionResult> CreateResponse(string definitionLanguage, string word, string wordLanguage)
+        {
+            try
+            {
                 var definition = await Get(definitionLanguage, word, wordLanguage);
                 return Ok(definition);
             }
-            catch (ArgumentException e) {
+            catch (ArgumentException e)
+            {
                 Console.WriteLine(e.Message);
                 Console.WriteLine(e.StackTrace);
                 return NotFound();
             }
         }
 
-        private async Task<Definition> Get(string definitionLanguage, string word, string wordLanguage) {
+        private async Task<Definition> Get(string definitionLanguage, string word, string wordLanguage)
+        {
             word = FormatWord(word);
             var definitionParser = DefinitionProviderFactory.Create(clientFactory, definitionLanguage, wordLanguage);
             var definition = await definitionParser.Get(word);
