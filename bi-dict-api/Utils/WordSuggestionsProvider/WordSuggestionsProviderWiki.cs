@@ -6,7 +6,7 @@
     using System.Text.Json;
     using System.Threading.Tasks;
 
-    public class WordSuggestionsProviderWiki : IWordSuggestions
+    public class WordSuggestionsProviderWiki : IWordSuggestionsProvider
     {
         //using https://jdict.net/api/v1/ API
         private readonly IHttpClientFactory clientFactory;

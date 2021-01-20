@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    public interface IWordSuggestions
+    public interface IWordSuggestionsProvider
     {
         public Task<IEnumerable<WordSuggestion>> Get(string word);
     }

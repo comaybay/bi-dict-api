@@ -29,7 +29,7 @@ namespace bi_dict_api.Controllers
         {
             try
             {
-                var suggestions = await WordSuggestionsFactory.Create(clientFactory, language).Get(word);
+                var suggestions = await WordSuggestionsProviderFactory.Create(clientFactory, language).Get(word);
                 return Ok(suggestions);
             }
             catch (Exception e)

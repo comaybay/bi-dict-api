@@ -9,12 +9,12 @@
     using System.Xml.Linq;
 
     //using http://tratu.soha.vn/extensions/curl_suggest.php API
-    public class WordSuggestionsTratuSoha : IWordSuggestions
+    public class WordSuggestionsProviderTratuSoha : IWordSuggestionsProvider
     {
         private readonly IHttpClientFactory clientFactory;
         private readonly string languageCode;
 
-        public WordSuggestionsTratuSoha(IHttpClientFactory clientFactory, string languageCode)
+        public WordSuggestionsProviderTratuSoha(IHttpClientFactory clientFactory, string languageCode)
         {
             this.clientFactory = clientFactory;
             this.languageCode = languageCode;

@@ -9,11 +9,11 @@
     using System.Threading.Tasks;
 
     //using https://jdict.net/api/v1/ API
-    public class WordSuggestionsJdict : IWordSuggestions
+    public class WordSuggestionsProviderJdict : IWordSuggestionsProvider
     {
         private readonly IHttpClientFactory clientFactory;
 
-        public WordSuggestionsJdict(IHttpClientFactory clientFactory)
+        public WordSuggestionsProviderJdict(IHttpClientFactory clientFactory)
         {
             this.clientFactory = clientFactory;
         }
