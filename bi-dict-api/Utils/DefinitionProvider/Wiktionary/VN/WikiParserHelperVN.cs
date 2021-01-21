@@ -8,9 +8,9 @@
 
     internal class WikiParserHelperVN : WikiParserHelperBase
     {
-        public override IList<string> ParsePronunciationFrom(HtmlNode pronunciationSection)
+        public override IList<string> ParsePronunciationsFrom(HtmlNode pronunciationSection)
         {
-            var pronunciations = base.ParsePronunciationFrom(pronunciationSection);
+            var pronunciations = base.ParsePronunciationsFrom(pronunciationSection);
             var others = pronunciationSection.QuerySelectorAll("li > span > [title='Wiktionary:IPA']")
                                              .Select(span => span.InnerText);
             return pronunciations.Concat(others).ToList();

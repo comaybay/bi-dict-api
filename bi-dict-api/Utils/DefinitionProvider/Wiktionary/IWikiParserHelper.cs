@@ -6,7 +6,7 @@
     public interface IWikiParserHelper
     {
 
-        public IEnumerable<string> ParsePronunciationFrom(HtmlNode PronunciationSection);
+        public IEnumerable<string> ParsePronunciationsFrom(HtmlNode PronunciationSection);
 
         public string GetLanguageSectionId(string language);
 

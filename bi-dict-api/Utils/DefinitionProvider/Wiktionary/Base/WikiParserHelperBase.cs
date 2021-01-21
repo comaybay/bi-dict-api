@@ -10,7 +10,7 @@
     public abstract class WikiParserHelperBase : IWikiParserHelper
     {
 
-        public virtual IEnumerable<string> ParsePronunciationFrom(HtmlNode pronunciationSection)
+        public virtual IEnumerable<string> ParsePronunciationsFrom(HtmlNode pronunciationSection)
          => pronunciationSection.QuerySelectorAll("ul > li")
                                 .Select(li => li.QuerySelector("span.IPA")?.InnerText ?? "")
                                 .Where(pronunciation =>

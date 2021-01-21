@@ -31,65 +31,72 @@
                                   .Where(rawSection =>
                                   {
                                       //select first elem text
-                                      var sectionTitle = GetEtymologyInnerSectionTitle(rawSection) ?? "";
+                                      var rawSectionTitle = GetRawPartOfSpeech(rawSection) ?? dummyElement;
+                                      var sectionTitle = ParsePartOfSpeech(rawSectionTitle);
                                       if (String.IsNullOrEmpty(sectionTitle))
                                           return false;
                                       else
                                           //if section title contains one of these words
                                           return Config.DefinitionSectionFilter.Contains(sectionTitle);
                                   });
-
-        protected virtual string? GetEtymologyInnerSectionTitle(HtmlNode rawSection)
-            => rawSection.SelectSingleNode("(h6 | h5 | h4 | h3 | h2 | h1)")?.InnerText;
+        protected virtual HtmlNode? GetRawPartOfSpeech(HtmlNode rawSection)
+            => rawSection.SelectSingleNode("(h6 | h5 | h4 | h3 | h2 | h1)");
+        protected virtual string ParsePartOfSpeech(HtmlNode rawSection)
+            => rawSection.InnerText;
 
         protected virtual EtymologySection ParseEtymologySection(HtmlNode rawEtymologySection)
         {
             var rawEtymologyTexts = GetRawEtymologyTexts(rawEtymologySection);
             var rawInnerSections = GetRawEtymologyInnerSections(rawEtymologySection);
+            var rawPronunciationSection = GetRawEtymologyPronunciationSection(rawEtymologySection) ?? dummyElement;
 
             return new EtymologySection
             {
                 EtymologyTexts = rawEtymologyTexts.Select(raw => ParseEtymologyText(raw)),
-                Pronunciations = ParseEtymologySectionPronunciations(rawEtymologySection),
+                Pronunciations = ParseEtymologySectionPronunciations(rawPronunciationSection),
                 InnerSections = rawInnerSections.Select(rawSection => ParseEtymologyInnerSection(rawSection)),
             };
         }
 
+        protected virtual HtmlNode? GetRawEtymologyPronunciationSection(HtmlNode rawEtymologySection)
+            => rawEtymologySection.QuerySelector($"section > [id^='{Config.EtymologyPronunciationId}']")
+                                 ?.ParentNode;
         protected virtual string ParseEtymologyText(HtmlNode rawText)
             => Helper.RemoveCiteNotes(rawText.InnerText);
 
-        protected virtual IEnumerable<string> ParseEtymologySectionPronunciations(HtmlNode rawEtymologySection)
-        {
-            var pronunciationSection = rawEtymologySection.QuerySelector($"section > [id^='{Config.EtymologyPronunciationId}']")
-                                                   ?.ParentNode;
-            if (pronunciationSection is null)
-                return Array.Empty<string>();
-            else
-                return Helper.ParsePronunciationFrom(pronunciationSection);
-        }
+        protected virtual IEnumerable<string> ParseEtymologySectionPronunciations(HtmlNode rawPronunciaionSection)
+            => Helper.ParsePronunciationsFrom(rawPronunciaionSection);
 
         protected virtual EtymologyInnerSection ParseEtymologyInnerSection(HtmlNode rawSection)
         {
+            var rawPartOfSpeech = GetRawPartOfSpeech(rawSection) ?? dummyElement;
+            var rawInflection = GetRawInflection(rawSection) ?? dummyElement;
             var rawDefinitionSections = GetRawDefinitionSections(rawSection);
             var rawSynonymSection = GetRawInnerSectionSynonymSection(rawSection) ?? dummyElement;
             var rawAntonymSection = GetRawInnerSectionAntonymSection(rawSection) ?? dummyElement;
 
             return new EtymologyInnerSection()
             {
-                PartOfSpeech = GetEtymologyInnerSectionTitle(rawSection) ?? "",
-                Inflection = rawSection.SelectSingleNode("p")?.InnerText ?? "",
+                PartOfSpeech = ParsePartOfSpeech(rawPartOfSpeech),
+                Inflection = ParseInfection(rawInflection),
                 DefinitionSections = rawDefinitionSections.Select(raw => ParseDefinitionSection(raw)),
                 Synonyms = ParseInnerSectionSynonymSection(rawSynonymSection),
                 Antonyms = ParseInnerSectionAntonymSection(rawAntonymSection),
             };
         }
 
+        protected virtual string ParseInfection(HtmlNode rawInflection)
+            => rawInflection.InnerText;
+
+        protected virtual HtmlNode? GetRawInflection(HtmlNode rawSection)
+            => rawSection.SelectSingleNode("p");
+
         protected virtual IEnumerable<string> ParseInnerSectionSynonymSection(HtmlNode rawSynonymSection)
             => rawSynonymSection.QuerySelectorAll("ul > li")
                          .Where(elem => !elem.InnerText.Contains("See also")) // avoid "see also thesaurus"
                          .Select(elem => elem.InnerText);
 
-        private HtmlNode? GetRawInnerSectionSynonymSection(HtmlNode rawSection)
+        protected virtual HtmlNode? GetRawInnerSectionSynonymSection(HtmlNode rawSection)
             => rawSection.QuerySelector($"section > [id^='{Config.InnerSectionSynonymId}']")
                         ?.ParentNode;
 

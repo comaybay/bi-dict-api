@@ -51,7 +51,7 @@
                                                              ?.ParentNode;
 
             return (globalaPronunciationSection is null)
-            ? Array.Empty<string>() : Helper.ParsePronunciationFrom(globalaPronunciationSection);
+            ? Array.Empty<string>() : Helper.ParsePronunciationsFrom(globalaPronunciationSection);
         }
     }
 }
