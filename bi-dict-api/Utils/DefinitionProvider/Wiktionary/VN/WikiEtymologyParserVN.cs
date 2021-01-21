@@ -3,6 +3,7 @@
     using Base;
     using Fizzler.Systems.HtmlAgilityPack;
     using HtmlAgilityPack;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -13,7 +14,7 @@
             Helper = new WikiParserHelperVN();
             Config = new WikiEtymologyParserOptions()
             {
-                DefinitionSectionFilter = "Danh từ Động từ Nội động từ Tính từ Số từ Lượng từ Phó từ Đại từ Chỉ từ "
+                DefinitionSectionFilter = "Danh từ Động từ Nội động từ Ngoại động từ Tính từ Số từ Lượng từ Phó từ Đại từ Chỉ từ "
                                       + "Trợ từ Thán từ Tình thái từ Quan hệ từ Giới từ Thành ngữ Tục ngữ"
                                       + "Mạo từ hạn định Liên từ Danh từ riêng",
                 EtymologySectionId = "Từ_nguyên",
@@ -25,8 +26,11 @@
             };
         }
 
+        protected override IEnumerable<HtmlNode> GetRawEtymologySections(HtmlNode languageSection)
+            => new HtmlNode[] { languageSection }; //vi.wiktionary definitions only have one etymolgy
+
         protected override IEnumerable<HtmlNode> GetRawEtymologyTexts(HtmlNode rawEtymologySection)
-            => rawEtymologySection.QuerySelectorAll("dl > dd");
+            => rawEtymologySection.QuerySelector("[id='Từ_nguyên']")?.ParentNode.Elements("p") ?? Array.Empty<HtmlNode>();
 
         protected override IEnumerable<HtmlNode> GetRawEtymologyInnerSections(HtmlNode rawEtymologySection)
         {
