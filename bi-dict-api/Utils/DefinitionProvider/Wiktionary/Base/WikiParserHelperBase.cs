@@ -14,7 +14,8 @@
          => pronunciationSection.QuerySelectorAll("ul > li")
                                 .Select(li => li.QuerySelector("span.IPA")?.InnerText ?? "")
                                 .Where(pronunciation =>
-                        pronunciation != null && pronunciation.StartsWith('/') /*avoid rhymes*/);
+                                pronunciation.StartsWith('[') ||
+                                pronunciation.StartsWith('/') /*avoid rhymes*/);
 
         public virtual string RemoveCiteNotes(string text)
         {
