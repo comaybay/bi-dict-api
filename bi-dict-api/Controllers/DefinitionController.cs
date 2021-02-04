@@ -48,10 +48,9 @@ namespace bi_dict_api.Controllers
                 var definition = await Get(definitionLanguage, word, wordLanguage);
                 return Ok(definition);
             }
-            catch (ArgumentException e)
+            catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                Console.WriteLine(e.StackTrace);
+                Console.WriteLine(e);
                 return NotFound();
             }
         }
