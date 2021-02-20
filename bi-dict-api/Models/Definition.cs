@@ -10,7 +10,7 @@ namespace bi_dict_api.Models
         public string DefinitionLanguage { get; set; } = default!;
         public IEnumerable<string> GlobalPronunciations { get; set; } = default!;
         public IEnumerable<EtymologySection> Etymologies { get; set; } = default!;
-        public string DefinitionSource { get; set; } = default!;
-        public string DefinitionSourceLink { get; set; } = default!;
+        public string SourceName { get; set; } = default!;
+        public string SourceLink { get; set; } = default!;
     }
 }

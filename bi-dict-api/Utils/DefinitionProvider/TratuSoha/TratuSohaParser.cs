@@ -20,8 +20,8 @@
 
             return new Definition()
             {
-                DefinitionSource = "TratuSoha",
-                DefinitionSourceLink = "http://tratu.soha.vn",
+                SourceName = "TratuSoha",
+                SourceLink = "http://tratu.soha.vn",
                 Word = ParseWord(doc),
                 DefinitionLanguage = Config.DefinitionLanguage,
                 WordLanguage = Config.WordLanguage,

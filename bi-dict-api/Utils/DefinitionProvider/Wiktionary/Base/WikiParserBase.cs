@@ -19,8 +19,8 @@
 
             var definition = new Definition
             {
-                DefinitionSource = "Wiktionary",
-                DefinitionSourceLink = "https://www.wiktionary.org/",
+                SourceName = "Wiktionary",
+                SourceLink = "https://www.wiktionary.org/",
                 Word = ParseNameOfWord(document),
                 DefinitionLanguage = Config.PageLanguage,
                 WordLanguage = Config.WordLanguage,
