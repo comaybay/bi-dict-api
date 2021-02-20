@@ -36,7 +36,7 @@
         {
             var rawInnerSections = base.GetRawEtymologyInnerSections(rawEtymologySection);
             //in vi.wikitionary, an etymology innersection can contain other innersections (Đồng nghĩa, Trái nghĩa).
-            var others = rawInnerSections.SelectMany(elem => elem.Elements("section"));
+            var others = rawInnerSections.SelectMany(elem => base.GetRawEtymologyInnerSections(elem));
             return rawInnerSections.Concat(others);
         }
 

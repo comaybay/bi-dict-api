@@ -17,7 +17,7 @@
             {
                 DefinitionSectionFilter = "Adjective Adverb Ambiposition Article "
                                               + "Circumposition Classifier Conjunction Contraction Counter Determiner Ideophone Interjection "
-                                              + "Noun Numeral Participle Particle Postposition Preposition Pronoun Proper noun Verb Phrase",
+                                              + "Noun Numeral Participle Particle Postposition Preposition Pronoun Proper noun Verb Phrase Letter",
                 EtymologyPronunciationId = "Pronunciation",
                 EtymologySectionId = "Etymology",
                 InnerSectionAntonymId = "Antonym",

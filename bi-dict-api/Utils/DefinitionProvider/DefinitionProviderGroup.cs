@@ -21,21 +21,23 @@
         {
             var getDefinitionTasks = providers.Select(provider => Task.Run(() => provider.Get(word), tokenSource.Token))
                                               .ToList();
-            while (getDefinitionTasks.Any())
+
+            foreach (var task in getDefinitionTasks)
             {
-                var finished = await Task.WhenAny(getDefinitionTasks);
                 try
                 {
+                    var definition = await task;
                     tokenSource.Cancel();
-                    return await finished;
+                    tokenSource.Dispose();
+                    return definition;
                 }
-                catch (Exception e)
+                catch (DefinitionException e) //TODO: Actual Logging system
                 {
                     Console.WriteLine(e);
-                    getDefinitionTasks.Remove(finished);
                 }
-            }
+            };
 
+            tokenSource.Dispose();
             throw new Exception($"Failed to get translation of {word}");
         }
     }

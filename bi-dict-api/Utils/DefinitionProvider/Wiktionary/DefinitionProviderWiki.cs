@@ -20,7 +20,7 @@
         {
             var response = await SendPageHtmlRequest(word);
             if (!response.IsSuccessStatusCode)
-                throw new HttpRequestException($"Failed to get wiktionary page content.");
+                throw new DefinitionException($"Failed to get wiktionary page content.");
 
             var html = await response.Content.ReadAsStringAsync();
             return wikiParser.Parse(html);

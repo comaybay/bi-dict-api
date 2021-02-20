@@ -11,15 +11,17 @@
     {
         static protected readonly HtmlNode dummyElement = new HtmlDocument().CreateElement("div");
         protected TratuSohaParserOptions Config { get; init; } = default!;
-
         public virtual Definition Parse(HtmlNode doc)
         {
             HtmlNode content = GetContent(doc);
-            var bodyContent = content.SelectSingleNode("div[@id='bodyContent']") ?? dummyElement;
+            var bodyContent = content.SelectSingleNode("div[@id='bodyContent']")
+                              ?? throw new DefinitionException("bodyContent not found");
             var rawEtymologies = GetRawEtymologies(bodyContent);
 
             return new Definition()
             {
+                DefinitionSource = "TratuSoha",
+                DefinitionSourceLink = "http://tratu.soha.vn",
                 Word = ParseWord(doc),
                 DefinitionLanguage = Config.DefinitionLanguage,
                 WordLanguage = Config.WordLanguage,
@@ -32,7 +34,7 @@
         {
             var content = doc.QuerySelector("div[id='content']");
             if (content == null)
-                throw new ArgumentNullException(nameof(content), "Unable to parse: content div not found");
+                throw new DefinitionException("Unable to parse: content div not found");
 
             return content;
         }

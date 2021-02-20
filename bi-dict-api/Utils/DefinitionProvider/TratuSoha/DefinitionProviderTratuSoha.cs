@@ -22,15 +22,17 @@
         {
             var web = new HtmlWeb();
             var doc = await web.LoadFromWebAsync($"http://tratu.soha.vn/dict/{languageQuery}/{word}");
-            CheckIfValid(doc);
-            return parser.Parse(doc.DocumentNode);
+
+            if (IsValid(doc))
+                return parser.Parse(doc.DocumentNode);
+            else
+                throw new DefinitionException("Word not found");
         }
 
-        private static void CheckIfValid(HtmlDocument doc)
+        private static bool IsValid(HtmlDocument doc)
         {
             var noArticleDiv = doc.GetElementbyId("bodyContent")?.SelectSingleNode("div[@class='noarticletext']");
-            if (noArticleDiv != null)
-                throw new Exception("Word not found");
+            return noArticleDiv == null;
         }
     }
 }

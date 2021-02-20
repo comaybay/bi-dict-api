@@ -5,6 +5,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using System.Xml.Linq;
 
@@ -41,21 +42,21 @@
                       Word = rs.Value,
                       Meaning = ParseMeaning(rs.Attribute("mean")?.Value ?? ""),
                   })
+                  .Where(ws => ws.Meaning != "")
             ?? new List<WordSuggestion>();
 
         private static string ParseMeaning(string rawMeaning)
         {
-            string meaning = rawMeaning.Replace("  ", " ");
-            //case 1: no unrelated stuff
-            if (!meaning.Contains("<font"))
-                return meaning.Trim();
+            //weird shit. Example: http://tratu.soha.vn/extensions/curl_suggest.php?search=b&dict=en_vn
+            if (rawMeaning.Contains("Tra Từ cho rằng phần phiên âm này chưa hoàn thiện"))
+                return "";
 
-            //case 2: unrelated stuff on both side
-            //case 3: unrelated stuff on the left
-            int startIndex = meaning.IndexOf("</font>") + "</font>".Length;
-            int endIndex = meaning.LastIndexOf("<font");
-            meaning = (startIndex < endIndex) ? rawMeaning[startIndex..endIndex] : rawMeaning[startIndex..];
-            return meaning.Trim();
+            //rawMeaning contains no unnecessary parts (text inside <font> tag) 
+            if (!rawMeaning.Contains("<font"))
+                return rawMeaning.Trim().Replace("  ", " ");
+
+            //rawMeaning contains unnecessary parts, remove them 
+            return Regex.Replace(rawMeaning, @"<font.*?(</font>|$)", "");
         }
 
         private async Task<HttpResponseMessage> SendSuggestionsRequest(string word)

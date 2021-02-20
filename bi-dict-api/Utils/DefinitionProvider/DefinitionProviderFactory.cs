@@ -17,13 +17,14 @@ namespace bi_dict_api.Utils.DefinitionProvider
                 ("en", "en") => new DefinitionProviderGroup(EnToENGroup(clientFactory)),
                 ("en", "vi") => new DefinitionProviderGroup(VIToENGroup(clientFactory)),
                 ("vi", "en") => new DefinitionProviderGroup(EnToVIGroup(clientFactory)),
-                (_, _) => throw new NotImplementedException()
+                ("vi", "vi") => new DefinitionProviderGroup(VIToVIGroup(clientFactory)),
+                (_, _) => throw new NotImplementedException(),
             };
 
         private static IEnumerable<IDefinitionProvider> EnToENGroup(IHttpClientFactory clientFactory)
             => new IDefinitionProvider[] {
-                    new DefinitionProviderWiki(clientFactory, new WikiParserEN("en")),
                     new DefinitionProviderTratuSoha("en_en", new TratuSohaParserENToEN()),
+                    new DefinitionProviderWiki(clientFactory, new WikiParserEN("en")),
             };
         private static IEnumerable<IDefinitionProvider> EnToVIGroup(IHttpClientFactory clientFactory)
             => new IDefinitionProvider[] {
@@ -35,5 +36,10 @@ namespace bi_dict_api.Utils.DefinitionProvider
                     new DefinitionProviderWiki(clientFactory, new WikiParserEN("vi")),
                     new DefinitionProviderTratuSoha("vn_en", new TratuSohaParserVNToEN()),
             };
+        private static IEnumerable<IDefinitionProvider> VIToVIGroup(IHttpClientFactory clientFactory)
+            => new IDefinitionProvider[] {
+                    new DefinitionProviderWiki(clientFactory, new WikiParserVN("vi")),
+                    new DefinitionProviderTratuSoha("vn_vn", new TratuSohaParserDefault("vi", "vi")),
+    };
     }
 }

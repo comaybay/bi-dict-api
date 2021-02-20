@@ -19,6 +19,8 @@
 
             var definition = new Definition
             {
+                DefinitionSource = "Wiktionary",
+                DefinitionSourceLink = "https://www.wiktionary.org/",
                 Word = ParseNameOfWord(document),
                 DefinitionLanguage = Config.PageLanguage,
                 WordLanguage = Config.WordLanguage,
@@ -36,7 +38,7 @@
             var id = Helper.GetLanguageSectionId(Config.WordLanguage);
             var languageSection = document.DocumentNode.QuerySelector($"section > [id='{id}']")?.ParentNode;
             if (languageSection is null)
-                throw new ArgumentException("Language section to find definition not found.");
+                throw new DefinitionException("Language section to find definition not found.");
 
             return (document, languageSection);
         }

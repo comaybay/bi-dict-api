@@ -12,7 +12,7 @@
                 "vi" => new WordSuggestionsProviderTratuSoha(clientFactory, "vn_vn"),
                 "en" => new WordSuggestionsProviderTratuSoha(clientFactory, "en_vn"),
                 "ja" => new WordSuggestionsProviderJdict(clientFactory),
-                _ => throw new NotImplementedException($"language \"{wordLanguage}\" not implemented or invalid"),
+                _ => new WordSuggestionsProviderWiki(clientFactory, wordLanguage),
             };
     }
 }
