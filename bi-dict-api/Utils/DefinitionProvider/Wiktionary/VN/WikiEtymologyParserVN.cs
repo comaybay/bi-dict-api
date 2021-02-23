@@ -16,7 +16,7 @@
             {
                 DefinitionSectionFilter = "Danh từ Động từ Nội động từ Ngoại động từ Tính từ Số từ Lượng từ Phó từ Đại từ Chỉ từ "
                                       + "Trợ từ Thán từ Tình thái từ Quan hệ từ Giới từ Thành ngữ Tục ngữ"
-                                      + "Mạo từ hạn định Liên từ Danh từ riêng",
+                                      + "Mạo từ hạn định Liên từ Danh từ riêng Từ viết tắt",
                 EtymologySectionId = "Từ_nguyên",
                 EtymologyPronunciationId = "Cách_phát_âm",
                 InnerSectionAntonymId = "Trái_nghĩa",

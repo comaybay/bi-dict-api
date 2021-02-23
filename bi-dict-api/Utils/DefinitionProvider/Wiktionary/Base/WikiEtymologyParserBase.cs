@@ -6,6 +6,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text.RegularExpressions;
 
     public abstract class WikiEtymologyParserBase : IWikiEtymologyParser
     {
@@ -93,7 +94,7 @@
 
         protected virtual IEnumerable<string> ParseInnerSectionSynonymSection(HtmlNode rawSynonymSection)
             => rawSynonymSection.QuerySelectorAll("ul > li")
-                         .Where(elem => !elem.InnerText.Contains("See also")) // avoid "see also thesaurus"
+                         .Where(elem => !Regex.IsMatch(elem.InnerText, @"see( also)? thesaurus", RegexOptions.IgnoreCase)) // avoid "see also thesaurus"
                          .Select(elem => elem.InnerText);
 
         protected virtual HtmlNode? GetRawInnerSectionSynonymSection(HtmlNode rawSection)

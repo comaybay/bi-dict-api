@@ -23,8 +23,8 @@ namespace bi_dict_api.Utils.DefinitionProvider
 
         private static IEnumerable<IDefinitionProvider> EnToENGroup(IHttpClientFactory clientFactory)
             => new IDefinitionProvider[] {
-                    new DefinitionProviderTratuSoha("en_en", new TratuSohaParserENToEN()),
                     new DefinitionProviderWiki(clientFactory, new WikiParserEN("en")),
+                    new DefinitionProviderTratuSoha("en_en", new TratuSohaParserENToEN()),
             };
         private static IEnumerable<IDefinitionProvider> EnToVIGroup(IHttpClientFactory clientFactory)
             => new IDefinitionProvider[] {
