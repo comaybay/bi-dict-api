@@ -3,6 +3,7 @@ using System.Net.Http;
 
 namespace bi_dict_api.Utils.DefinitionProvider
 {
+    using bi_dict_api.Utils.DefinitionProvider.Lexico;
     using bi_dict_api.Utils.DefinitionProvider.TratuSoha;
     using bi_dict_api.Utils.DefinitionProvider.Wiktionary;
     using System.Collections.Generic;
@@ -23,8 +24,9 @@ namespace bi_dict_api.Utils.DefinitionProvider
 
         private static IEnumerable<IDefinitionProvider> EnToENGroup(IHttpClientFactory clientFactory)
             => new IDefinitionProvider[] {
-                    new DefinitionProviderWiki(clientFactory, new WikiParserEN("en")),
-                    new DefinitionProviderTratuSoha("en_en", new TratuSohaParserENToEN()),
+                    new DefinitionProviderLexico(new LexicoParserENToEN()),
+                    //new DefinitionProviderWiki(clientFactory, new WikiParserEN("en")),
+                    //new DefinitionProviderTratuSoha("en_en", new TratuSohaParserENToEN()),
             };
         private static IEnumerable<IDefinitionProvider> EnToVIGroup(IHttpClientFactory clientFactory)
             => new IDefinitionProvider[] {
