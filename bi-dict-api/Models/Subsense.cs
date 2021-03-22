@@ -3,13 +3,13 @@
 namespace bi_dict_api.Models
 {
 
-    public class DefinitionSection
+    public class Subsense
     {
-        public string Definition { get; set; } = default!;
+        public string Meaning { get; set; } = default!;
         public IEnumerable<string> Examples { get; set; } = default!;
         public IEnumerable<string> Synonyms { get; set; } = default!;
         public IEnumerable<string> Antonyms { get; set; } = default!;
 
-        public IEnumerable<DefinitionSection> SubDefinitions { get; set; } = default!;
+        public IEnumerable<Subsense> SubSenses { get; set; } = default!;
     }
 }

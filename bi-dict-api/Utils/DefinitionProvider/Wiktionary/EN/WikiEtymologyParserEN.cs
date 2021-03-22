@@ -26,17 +26,17 @@
                 SynonymTextQuery = "Synonym",
             };
         }
-        public override IEnumerable<EtymologySection> Parse(HtmlNode languageSection)
+        public override IEnumerable<Etymology> Parse(HtmlNode languageSection)
         {
             var rawEtymologySections = GetRawEtymologySections(languageSection);
             if (rawEtymologySections.Count() > 1)
                 //Normal Case: Multiple EtymologySections (definitions are inside of EtymologySection sections)
                 return rawEtymologySections.Select(rawEtymologySection => ParseEtymologySection(rawEtymologySection));
             else
-                return new EtymologySection[] { ParseEtymologySectionSpecialCase(languageSection) };
+                return new Etymology[] { ParseEtymologySectionSpecialCase(languageSection) };
         }
 
-        private EtymologySection ParseEtymologySectionSpecialCase(HtmlNode languageSection)
+        private Etymology ParseEtymologySectionSpecialCase(HtmlNode languageSection)
         {
             //Special Case where there is only one EtymologySection
             //(definitions might be outside of Etymology section or no Etymology section at all (html))
@@ -47,9 +47,9 @@
 
             var rawTexts = GetRawEtymologyTexts(rawEtymologySection);
             var rawInnerSections = GetRawEtymologyInnerSections(languageSection);
-            return new EtymologySection
+            return new Etymology
             {
-                EtymologyTexts = rawTexts.Select(raw => ParseEtymologyText(raw)),
+                Origin = rawTexts.Select(raw => ParseEtymologyText(raw)),
                 Pronunciations = Array.Empty<string>(), //no need since these are in globalPronunciations
                 InnerSections = rawInnerSections.Select(rawSection => ParseEtymologyInnerSection(rawSection)),
             };

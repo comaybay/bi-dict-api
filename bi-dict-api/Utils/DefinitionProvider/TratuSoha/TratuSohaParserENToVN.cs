@@ -22,35 +22,35 @@
         protected override IEnumerable<HtmlNode> GetRawEtymologies(HtmlNode bodyContent)
             => bodyContent.SelectNodes("div[@id='show-alter']") ?? new HtmlNodeCollection(dummyElement);
 
-        protected override DefinitionSection ParseDefinitionSection(HtmlNode rawDefinitionSection)
+        protected override Subsense ParseDefinitionSection(HtmlNode rawDefinitionSection)
         {
             int exampleCount = rawDefinitionSection.SelectNodes("dl/dd/dl/dd")?.Count ?? 0;
             return exampleCount == 1 ? SpecialCase() : NormalCase();
 
-            DefinitionSection NormalCase() //Example: Danh từ section in http://tratu.soha.vn/dict/en_vn/smile
+            Subsense NormalCase() //Example: Danh từ section in http://tratu.soha.vn/dict/en_vn/smile
             {
                 var rawDefinitionText = GetRawDefinitionText(rawDefinitionSection);
                 var rawExampleSection = GetRawExampleSection(rawDefinitionSection);
-                return new DefinitionSection()
+                return new Subsense()
                 {
-                    Definition = ParseDefinitionText(rawDefinitionText),
+                    Meaning = ParseDefinitionText(rawDefinitionText),
                     Examples = ParseExamples(rawExampleSection),
                     Antonyms = Array.Empty<string>(),
                     Synonyms = Array.Empty<string>(),
-                    SubDefinitions = Array.Empty<DefinitionSection>()
+                    SubSenses = Array.Empty<Subsense>()
                 };
             }
 
-            DefinitionSection SpecialCase() //Example: Cấu trúc trừ section in http://tratu.soha.vn/dict/en_vn/smile
+            Subsense SpecialCase() //Example: Cấu trúc trừ section in http://tratu.soha.vn/dict/en_vn/smile
             {
                 var rawExampleSection = GetRawExampleSectionSpecialCase(rawDefinitionSection);
-                return new DefinitionSection()
+                return new Subsense()
                 {
-                    Definition = ParseDefinitionTextSpecialCase(rawDefinitionSection),
+                    Meaning = ParseDefinitionTextSpecialCase(rawDefinitionSection),
                     Examples = ParseExamples(rawExampleSection),
                     Antonyms = Array.Empty<string>(),
                     Synonyms = Array.Empty<string>(),
-                    SubDefinitions = Array.Empty<DefinitionSection>()
+                    SubSenses = Array.Empty<Subsense>()
                 };
             }
         }

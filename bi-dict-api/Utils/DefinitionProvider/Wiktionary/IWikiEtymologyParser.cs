@@ -7,6 +7,6 @@
     public interface IWikiEtymologyParser
     {
 
-        public IEnumerable<EtymologySection> Parse(HtmlNode LanguageSection);
+        public IEnumerable<Etymology> Parse(HtmlNode LanguageSection);
     }
 }

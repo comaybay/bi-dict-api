@@ -44,7 +44,7 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
         /* Parses information through entryHead element and it's siblings that are before another entryHead element
          * sibling is also an entryHead element
          */
-        private EtymologySection ParseEtymology(HtmlNode entryHead)
+        private Etymology ParseEtymology(HtmlNode entryHead)
         {
             var pronunciations = ParsePronunciations(entryHead);
 
@@ -68,11 +68,11 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
                 sibling = sibling.NextSibling;
             }
 
-            return new EtymologySection()
+            return new Etymology()
             {
                 InnerSections = innerSections,
                 Pronunciations = pronunciations,
-                EtymologyTexts = new string[] { origin },
+                Origin = new string[] { origin },
             };
         }
 

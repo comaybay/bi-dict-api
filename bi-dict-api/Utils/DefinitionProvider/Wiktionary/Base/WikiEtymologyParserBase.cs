@@ -14,7 +14,7 @@
         protected WikiEtymologyParserOptions Config { get; init; } = default!;
         static protected readonly HtmlNode dummyElement = new HtmlDocument().CreateElement("div");
 
-        public virtual IEnumerable<EtymologySection> Parse(HtmlNode languageSection)
+        public virtual IEnumerable<Etymology> Parse(HtmlNode languageSection)
         {
             var rawEtymologySections = GetRawEtymologySections(languageSection);
             return rawEtymologySections.Select(rawEtymologySection => ParseEtymologySection(rawEtymologySection));
@@ -45,15 +45,15 @@
         protected virtual string ParsePartOfSpeech(HtmlNode rawSection)
             => rawSection.InnerText;
 
-        protected virtual EtymologySection ParseEtymologySection(HtmlNode rawEtymologySection)
+        protected virtual Etymology ParseEtymologySection(HtmlNode rawEtymologySection)
         {
             var rawEtymologyTexts = GetRawEtymologyTexts(rawEtymologySection);
             var rawInnerSections = GetRawEtymologyInnerSections(rawEtymologySection);
             var rawPronunciationSection = GetRawEtymologyPronunciationSection(rawEtymologySection) ?? dummyElement;
 
-            return new EtymologySection
+            return new Etymology
             {
-                EtymologyTexts = rawEtymologyTexts.Select(raw => ParseEtymologyText(raw)),
+                Origin = rawEtymologyTexts.Select(raw => ParseEtymologyText(raw)),
                 Pronunciations = ParseEtymologySectionPronunciations(rawPronunciationSection),
                 InnerSections = rawInnerSections.Select(rawSection => ParseEtymologyInnerSection(rawSection)),
             };
@@ -79,8 +79,8 @@
             return new EtymologyInnerSection()
             {
                 PartOfSpeech = ParsePartOfSpeech(rawPartOfSpeech),
-                Inflection = ParseInfection(rawInflection),
-                DefinitionSections = rawDefinitionSections.Select(raw => ParseDefinitionSection(raw)),
+                Meaning = ParseInfection(rawInflection),
+                SubSenses = rawDefinitionSections.Select(raw => ParseDefinitionSection(raw)),
                 Synonyms = ParseInnerSectionSynonymSection(rawSynonymSection),
                 Antonyms = ParseInnerSectionAntonymSection(rawAntonymSection),
             };
@@ -113,7 +113,7 @@
         protected virtual IEnumerable<HtmlNode> GetRawDefinitionSections(HtmlNode rawInnerSection)
             => Helper.QuerySelectorAllDirectChildren(rawInnerSection, "ol > li");
 
-        protected virtual DefinitionSection ParseDefinitionSection(HtmlNode rawDefinitionSection)
+        protected virtual Subsense ParseDefinitionSection(HtmlNode rawDefinitionSection)
         {
             //rawDefinitionSection should be an li element that might
             //contains an ul element (examples with citation)
@@ -121,13 +121,13 @@
             //and might also contain synonyms or antonyms
             var rawSubDefinitions = GetRawDefinitionSections(rawDefinitionSection);
 
-            return new DefinitionSection()
+            return new Subsense()
             {
-                Definition = ParseDefinitionSectionDefinition(rawDefinitionSection),
+                Meaning = ParseDefinitionSectionDefinition(rawDefinitionSection),
                 Examples = ParseExamples(rawDefinitionSection),
                 Synonyms = ParseDefinitionSectionSynonyms(rawDefinitionSection),
                 Antonyms = ParseDefinitionSectionAntonyms(rawDefinitionSection),
-                SubDefinitions = rawSubDefinitions.Select(raw => ParseDefinitionSection(raw)) //recursion
+                SubSenses = rawSubDefinitions.Select(raw => ParseDefinitionSection(raw)) //recursion
             };
         }
 

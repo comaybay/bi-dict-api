@@ -3,9 +3,9 @@
 namespace bi_dict_api.Models
 {
 
-    public class EtymologySection
+    public class Etymology
     {
-        public IEnumerable<string> EtymologyTexts { get; set; } = default!;
+        public IEnumerable<string> Origin { get; set; } = default!;
         public IEnumerable<string> Pronunciations { get; set; } = default!;
         public IEnumerable<EtymologyInnerSection> InnerSections { get; set; } = default!;
     }

@@ -42,12 +42,12 @@
         protected virtual IEnumerable<HtmlNode> GetRawEtymologies(HtmlNode bodyContent)
             => new HtmlNode[] { bodyContent };
 
-        private EtymologySection ParseEtymology(HtmlNode rawEtymology)
+        private Etymology ParseEtymology(HtmlNode rawEtymology)
         {
             var rawInnerSections = GetRawInnerSections(rawEtymology);
-            return new EtymologySection()
+            return new Etymology()
             {
-                EtymologyTexts = Array.Empty<string>(),
+                Origin = Array.Empty<string>(),
                 Pronunciations = Array.Empty<string>(),
                 InnerSections = rawInnerSections.Select(raw => ParseInnerSection(raw))
             };
@@ -69,24 +69,24 @@
             return new EtymologyInnerSection()
             {
                 PartOfSpeech = ParsePartOfSpeech(rawPartOfSpeech),
-                Inflection = "",
+                Meaning = "",
                 Antonyms = Array.Empty<string>(),
                 Synonyms = Array.Empty<string>(),
-                DefinitionSections = rawDefintionSections.Select(raw => ParseDefinitionSection(raw))
+                SubSenses = rawDefintionSections.Select(raw => ParseDefinitionSection(raw))
             };
         }
 
-        protected virtual DefinitionSection ParseDefinitionSection(HtmlNode rawDefinitionSection)
+        protected virtual Subsense ParseDefinitionSection(HtmlNode rawDefinitionSection)
         {
             var rawDefininitionText = GetRawDefinitionText(rawDefinitionSection);
             var rawExamples = GetRawExamples(rawDefinitionSection);
-            return new DefinitionSection()
+            return new Subsense()
             {
-                Definition = ParseDefinitionText(rawDefininitionText),
+                Meaning = ParseDefinitionText(rawDefininitionText),
                 Examples = rawExamples.Select(raw => ParseExample(raw)),
                 Antonyms = Array.Empty<string>(),
                 Synonyms = Array.Empty<string>(),
-                SubDefinitions = Array.Empty<DefinitionSection>()
+                SubSenses = Array.Empty<Subsense>()
             };
         }
 
