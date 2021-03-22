@@ -79,8 +79,18 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
         private EtymologyInnerSection ParseInnerSection(HtmlNode gramb)
         {
             //TODO: finish this shit
-            return new EtymologyInnerSection();
+            return new EtymologyInnerSection()
+            {
+                PartOfSpeech = ParsePartOfSpeech(gramb),
+                Inflection = ParseInflection(gramb),
+            };
         }
+
+        private string ParseInflection(HtmlNode gramb)
+            => gramb.QuerySelector("h3 > span[class='pos-inflections']")?.InnerText ?? "";
+
+        private string ParsePartOfSpeech(HtmlNode gramb)
+            => gramb.QuerySelector("h3 > span[class='pos']")?.InnerText ?? "";
 
         private IEnumerable<string> ParsePronunciations(HtmlNode entryHead)
          => entryHead.QuerySelector("h3[class='pronunciations']")
