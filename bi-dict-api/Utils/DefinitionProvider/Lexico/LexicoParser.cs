@@ -1,4 +1,5 @@
 ﻿using bi_dict_api.Models;
+using bi_dict_api.Utils.Extensions;
 using Fizzler.Systems.HtmlAgilityPack;
 using HtmlAgilityPack;
 using System;
@@ -11,6 +12,7 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
     {
         protected LexicoParserOptions Config { get; set; } = default!;
 
+        //example: https://www.lexico.com/en/definition/go
         public Definition Parse(HtmlNode doc)
         {
             var entryWrapper = GetEntryWrapper(doc);
@@ -30,7 +32,7 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
 
         private static IEnumerable<HtmlNode> GetEntryHeads(HtmlNode entryWrapper)
         {
-            var entryHeads = entryWrapper.QuerySelectorAll("div[class*='entryHead']");
+            var entryHeads = entryWrapper.QuerySelectorAll("div[class~='entryHead']");
             if (entryHeads.Any())
                 return entryHeads;
             else
@@ -78,13 +80,61 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
 
         private EtymologyInnerSection ParseInnerSection(HtmlNode gramb)
         {
-            //TODO: finish this shit
+            var rootSubsenses = gramb.QuerySelectorAll("ul[class='semb'] > li > div[class='trg']");
             return new EtymologyInnerSection()
             {
-                PartOfSpeech = ParsePartOfSpeech(gramb),
+                Meaning = "",
+                GrammaticalNote = "",
                 Inflection = ParseInflection(gramb),
+                PartOfSpeech = ParsePartOfSpeech(gramb),
+                SubSenses = rootSubsenses.Select(rs => ParseRootSubSense(rs)),
+                Synonyms = Array.Empty<string>(),
+                Antonyms = Array.Empty<string>(),
             };
         }
+
+        private Subsense ParseRootSubSense(HtmlNode rootSubsense)
+        {
+            //TODO: parse Subsenses
+            return new Subsense()
+            {
+                Examples = ParseExamples(rootSubsense),
+                Meaning = ParseRootMeaning(rootSubsense),
+                GrammaticalNote = ParseRootNote(rootSubsense),
+                Antonyms = Array.Empty<string>(), //lexico's definitions do not contain antonyms
+                Synonyms = ParseSynonyms(rootSubsense),
+            };
+        }
+
+        private string ParseRootNote(HtmlNode rootSubsense)
+        {
+            var note = rootSubsense.QuerySelector("p > span[class='grammatical_note']")
+                                   ?.InnerText;
+            return $"[{note}]";
+        }
+
+        private string ParseRootMeaning(HtmlNode rootSubsense)
+         => rootSubsense.QuerySelector("p > span[class='ind']")
+                        ?.InnerText
+                        ?? "";
+
+        private IEnumerable<string> ParseSynonyms(HtmlNode subsense)
+        => subsense.QuerySelector("div[class='synonyms'] > div[class='exg'] > div")
+                   ?.InnerText
+                   .Replace("&#39;", "'")
+                   .Split(", ")
+                   ?? Array.Empty<string>();
+
+        private IEnumerable<string> ParseExamples(HtmlNode subsense)
+        {
+            var example = subsense.QuerySelector("div[class='exg'] > div > em")?.InnerText;
+            var examples = subsense.QuerySelectorAllDirect("div[class='examples'] > div > ul > li").Select(li => li.InnerText);
+            if (example != null)
+                examples = examples.Prepend(example);
+
+            return examples.Select(li => li[7..^7]); //remove &lsquo; and &rsquo; (‘ and ’)
+        }
+
 
         private string ParseInflection(HtmlNode gramb)
             => gramb.QuerySelector("h3 > span[class='pos-inflections']")?.InnerText ?? "";

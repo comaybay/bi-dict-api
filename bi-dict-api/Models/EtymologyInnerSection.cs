@@ -7,6 +7,8 @@ namespace bi_dict_api.Models
     {
         public string PartOfSpeech { get; set; } = default!;
         public string Meaning { get; set; } = default!;
+        public string GrammaticalNote { get; set; } = default!;
+
         public string Inflection { get; set; } = default!;
         public IEnumerable<string> Synonyms { get; set; } = default!;
         public IEnumerable<string> Antonyms { get; set; } = default!;
