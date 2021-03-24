@@ -57,23 +57,27 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
             var pronunciations = ParsePronunciations(entryHead);
 
             var innerSections = new List<EtymologyInnerSection>();
-            var sibling = entryHead.NextSibling;
+
             string origin = "";
-            while (sibling != null)
+            for (var sibling = entryHead.NextSibling; sibling != null; sibling = sibling.NextSibling)
             {
                 if (!sibling.IsElement())
                     continue;
 
-                if (sibling.HasClass("entryHead"))
+                else if (sibling.HasClass("entryHead"))
                     break;
 
-                if (sibling.HasClass("gramb"))
+                else if (sibling.HasClass("gramb"))
                     innerSections.Add(ParseInnerSection(sibling));
 
-                if (sibling.QuerySelector("h3 > strong")?.InnerText == "Origin")
+                else if (sibling.QuerySelector("h3 > strong")?.InnerText == "Origin")
                     origin = sibling.QuerySelector("div > p")?.InnerText ?? "";
 
-                sibling = sibling.NextSibling;
+                //else if (sibling.HasClass("usage"))
+                //    innerSections.Add(ParseInnerSectionUsage(sibling));
+
+                else if (sibling.HasClass("etymology"))
+                    innerSections.Add(ParseInnerSectionSpecial(sibling));
             }
 
             return new Etymology()
@@ -83,6 +87,11 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
                 Origin = new string[] { origin },
                 Audio = ParseAudio(entryHead),
             };
+        }
+
+        private EtymologyInnerSection ParseInnerSectionUsage(HtmlNode sibling)
+        {
+            throw new NotImplementedException();
         }
 
         private string ParseAudio(HtmlNode entryHead)
@@ -111,6 +120,7 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
                 Antonyms = Array.Empty<string>(),
             };
         }
+
         private string ParseInflection(HtmlNode gramb)
             => gramb.QuerySelector("h3 > span[class='pos-inflections']")?.InnerText ?? "";
 
@@ -128,6 +138,7 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
                 Examples = ParseExamples(sense),
                 GrammaticalNote = ParseGrammaticalNote(container),
                 SenseRegisters = ParseSenseRegisters(container),
+                Region = ParseRegion(container),
                 Antonyms = Array.Empty<string>(), //lexico's definitions do not contain antonyms
                 Synonyms = ParseSynonyms(sense),
                 SubSenses = subsenses.Select(s => ParseSubSense(s)),
@@ -140,9 +151,11 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
         private string ParseSenseRegisters(HtmlNode container)
             => container.QuerySelector("span[class='sense-registers']")?.InnerText.Trim() ?? "";
 
-        private string ParseGrammaticalNote(HtmlNode rootSubsense)
-            => rootSubsense.QuerySelector("span[class='grammatical_note']")
-                ?.InnerText ?? "";
+        private string ParseRegion(HtmlNode container)
+            => container.QuerySelector("span[class='sense-regions']")?.InnerText.Trim() ?? "";
+
+        private string ParseGrammaticalNote(HtmlNode container)
+            => container.QuerySelector("span[class='grammatical_note']")?.InnerText ?? "";
 
         private string ParseMeaning(HtmlNode container)
             => container.QuerySelector("span[class='ind']")
@@ -175,10 +188,66 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
                 Meaning = ParseMeaning(subsense),
                 GrammaticalNote = ParseGrammaticalNote(subsense),
                 SenseRegisters = ParseSenseRegisters(subsense),
+                Region = ParseRegion(subsense),
                 Examples = ParseExamples(subsense),
                 Synonyms = ParseSynonyms(subsense),
                 Antonyms = Array.Empty<string>(), //lexico's definitions do not contain antonyms
                 SubSenses = childSubsenses.Select(s => ParseSubSense(s)),
+            };
+        }
+
+        //examples: parse Phrases section, Phrasal verbs section
+        private EtymologyInnerSection ParseInnerSectionSpecial(HtmlNode etym)
+        {
+            var strongs = etym.QuerySelectorAllDirect("div[class='senseInnerWrapper'] > ul > strong[class='phrase']");
+            return new EtymologyInnerSection()
+            {
+                PartOfSpeech = etym.QuerySelector("h3[class='phrases-title'] > strong")?.InnerText ?? "",
+                SubSenses = strongs.Select(s => ParseSubsenseSpecial(s)),
+                Antonyms = Array.Empty<string>(),
+                Synonyms = Array.Empty<string>(),
+                Inflection = "",
+                Meaning = "",
+            };
+        }
+
+        private Sense ParseSubsenseSpecial(HtmlNode strong)
+        {
+            string region = "";
+            string registers = "";
+            string note = "";
+            IEnumerable<HtmlNode> subsenses = Array.Empty<HtmlNode>();
+            for (var sibling = strong.NextSibling; sibling != null; sibling = sibling.NextSibling)
+            {
+                if (!sibling.IsElement())
+                    continue;
+
+                else if (sibling.HasClass("phrase"))
+                    break;
+
+                else if (sibling.HasClass("sense-regions"))
+                    region = sibling.InnerText.Trim();
+
+                else if (sibling.HasClass("sense-registers"))
+                    registers = sibling.InnerText.Trim();
+
+                else if (sibling.HasClass("grammatical_note"))
+                    note = sibling.InnerText;
+
+                else if (sibling.HasClass("semb"))
+                    subsenses = sibling.QuerySelectorAllDirect("li > div[class='trg']");
+            }
+
+            return new Sense()
+            {
+                Meaning = strong.InnerText,
+                Region = region,
+                SenseRegisters = registers,
+                GrammaticalNote = note,
+                SubSenses = subsenses.Select(s => ParseSense(s)),
+                Antonyms = Array.Empty<string>(),
+                Synonyms = Array.Empty<string>(),
+                Examples = Array.Empty<string>(),
             };
         }
     }
