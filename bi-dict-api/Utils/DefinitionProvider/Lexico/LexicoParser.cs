@@ -107,11 +107,8 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
         }
 
         private string ParseRootNote(HtmlNode rootSubsense)
-        {
-            var note = rootSubsense.QuerySelector("p > span[class='grammatical_note']")
-                                   ?.InnerText;
-            return $"[{note}]";
-        }
+         => rootSubsense.QuerySelector("p > span[class='grammatical_note']")
+                        ?.InnerText ?? "";
 
         private string ParseRootMeaning(HtmlNode rootSubsense)
          => rootSubsense.QuerySelector("p > span[class='ind']")

@@ -32,7 +32,7 @@
         {
             node.AddClass(marker);
             var res = node.ParentNode.QuerySelectorAll($"[class~='{marker}'] > {query}");
-            Console.WriteLine(res.Count());
+            node.RemoveClass(marker);
             return res;
         }
     }
