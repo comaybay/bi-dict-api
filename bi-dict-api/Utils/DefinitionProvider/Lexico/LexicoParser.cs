@@ -148,12 +148,12 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
         private IEnumerable<string> ParseExamples(HtmlNode sense)
         {
             var exampleElem = sense.QuerySelector("div[class='exg'] > div > em");
-            if (exampleElem == null)
-                return Array.Empty<string>();
+            var otherExampleElems = sense.QuerySelectorAllDirect("div[class='examples'] > div > ul > li > em");
 
-            return sense.QuerySelectorAllDirect("div[class='examples'] > div > ul > li > em")
-                        .Prepend(exampleElem)
-                        .Select(em => em.InnerText[7..^7]); //remove &lsquo; and &rsquo; (‘ and ’)
+            if (exampleElem != null)
+                otherExampleElems = otherExampleElems.Prepend(exampleElem);
+
+            return otherExampleElems.Select(em => em.InnerText[7..^7]); //remove &lsquo; and &rsquo; (‘ and ’)
         }
 
 
