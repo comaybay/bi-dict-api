@@ -81,8 +81,16 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
                 InnerSections = innerSections,
                 Pronunciations = pronunciations,
                 Origin = new string[] { origin },
+                Audio = ParseAudio(entryHead),
             };
         }
+
+        private string ParseAudio(HtmlNode entryHead)
+            => entryHead.QuerySelector("a[class='speaker'] > audio")
+                        ?.Attributes["src"]
+                        ?.Value
+                        ?? "";
+
         private IEnumerable<string> ParsePronunciations(HtmlNode entryHead)
             => entryHead.QuerySelector("h3[class='pronunciations']")
                 ?.QuerySelectorAll("span[class='phoneticspelling']")
@@ -116,8 +124,8 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
 
             return new Sense()
             {
-                Examples = ParseExamples(sense),
                 Meaning = ParseMeaning(container),
+                Examples = ParseExamples(sense),
                 GrammaticalNote = ParseGrammaticalNote(container),
                 SenseRegisters = ParseSenseRegisters(container),
                 Antonyms = Array.Empty<string>(), //lexico's definitions do not contain antonyms
