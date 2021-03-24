@@ -31,7 +31,8 @@
         public static IEnumerable<HtmlNode> QuerySelectorAllDirect(this HtmlNode node, string query)
         {
             node.AddClass(marker);
-            var res = node.ParentNode.QuerySelectorAll($"[class~='{marker}'] > {query}");
+            var res = node.ParentNode.QuerySelectorAll($"[class~='{marker}'] > {query}")
+                          .ToList(); //avoid lazy evaluation
             node.RemoveClass(marker);
             return res;
         }

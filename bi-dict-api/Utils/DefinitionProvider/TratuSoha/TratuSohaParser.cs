@@ -76,17 +76,17 @@
             };
         }
 
-        protected virtual Subsense ParseDefinitionSection(HtmlNode rawDefinitionSection)
+        protected virtual Sense ParseDefinitionSection(HtmlNode rawDefinitionSection)
         {
             var rawDefininitionText = GetRawDefinitionText(rawDefinitionSection);
             var rawExamples = GetRawExamples(rawDefinitionSection);
-            return new Subsense()
+            return new Sense()
             {
                 Meaning = ParseDefinitionText(rawDefininitionText),
                 Examples = rawExamples.Select(raw => ParseExample(raw)),
                 Antonyms = Array.Empty<string>(),
                 Synonyms = Array.Empty<string>(),
-                SubSenses = Array.Empty<Subsense>()
+                SubSenses = Array.Empty<Sense>()
             };
         }
 

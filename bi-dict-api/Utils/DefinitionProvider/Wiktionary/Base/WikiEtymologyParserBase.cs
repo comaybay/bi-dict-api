@@ -113,7 +113,7 @@
         protected virtual IEnumerable<HtmlNode> GetRawDefinitionSections(HtmlNode rawInnerSection)
             => Helper.QuerySelectorAllDirectChildren(rawInnerSection, "ol > li");
 
-        protected virtual Subsense ParseDefinitionSection(HtmlNode rawDefinitionSection)
+        protected virtual Sense ParseDefinitionSection(HtmlNode rawDefinitionSection)
         {
             //rawDefinitionSection should be an li element that might
             //contains an ul element (examples with citation)
@@ -121,7 +121,7 @@
             //and might also contain synonyms or antonyms
             var rawSubDefinitions = GetRawDefinitionSections(rawDefinitionSection);
 
-            return new Subsense()
+            return new Sense()
             {
                 Meaning = ParseDefinitionSectionDefinition(rawDefinitionSection),
                 Examples = ParseExamples(rawDefinitionSection),
