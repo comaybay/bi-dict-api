@@ -30,6 +30,12 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
             };
         }
 
+        private string ParseWord(HtmlNode entryWrapper)
+            => entryWrapper.QuerySelector(".entryHead > header > h2 > span")
+                           ?.Attributes["data-headword-id"]
+                           ?.Value
+                           ?? "";
+
         private static IEnumerable<HtmlNode> GetEntryHeads(HtmlNode entryWrapper)
         {
             var entryHeads = entryWrapper.QuerySelectorAll("div[class~='entryHead']");
@@ -77,6 +83,12 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
                 Origin = new string[] { origin },
             };
         }
+        private IEnumerable<string> ParsePronunciations(HtmlNode entryHead)
+            => entryHead.QuerySelector("h3[class='pronunciations']")
+                ?.QuerySelectorAll("span[class='phoneticspelling']")
+                .Where(span => span.InnerText != "")
+                .Select(span => span.InnerText)
+                ?? Array.Empty<string>();
 
         private EtymologyInnerSection ParseInnerSection(HtmlNode gramb)
         {
@@ -91,13 +103,17 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
                 Antonyms = Array.Empty<string>(),
             };
         }
+        private string ParseInflection(HtmlNode gramb)
+            => gramb.QuerySelector("h3 > span[class='pos-inflections']")?.InnerText ?? "";
+
+        private string ParsePartOfSpeech(HtmlNode gramb)
+            => gramb.QuerySelector("h3 > span[class='pos']")?.InnerText ?? "";
 
         private Sense ParseSense(HtmlNode sense)
         {
-            IEnumerable<HtmlNode> enumerable = sense.QuerySelectorAllDirect("ol[class='subSenses'] > li[class='subSense']");
-            var subsenses = enumerable;
+            var subsenses = getSubsenses(sense);
             var container = sense.QuerySelectorDirect("p");
-            //TODO: parse Subsenses
+
             return new Sense()
             {
                 Examples = ParseExamples(sense),
@@ -110,28 +126,15 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
             };
         }
 
+        private IEnumerable<HtmlNode> getSubsenses(HtmlNode sense)
+           => sense.QuerySelectorAllDirect("ol[class='subSenses'] > li[class='subSense']");
+
         private string ParseSenseRegisters(HtmlNode container)
             => container.QuerySelector("span[class='sense-registers']")?.InnerText.Trim() ?? "";
 
-        private Sense ParseSubSense(HtmlNode subsense)
-        {
-            return new Sense()
-            {
-                Meaning = ParseMeaning(subsense),
-                GrammaticalNote = ParseGrammaticalNote(subsense),
-                SenseRegisters = ParseSenseRegisters(subsense),
-                Examples = ParseExamples(subsense),
-                Synonyms = ParseSynonyms(subsense),
-                Antonyms = Array.Empty<string>(), //lexico's definitions do not contain antonyms
-            };
-        }
-
-        private string ParseSubsenseMeaning(HtmlNode subsense)
-            => subsense.QuerySelector("span[class='ind']")?.InnerText ?? "";
-
         private string ParseGrammaticalNote(HtmlNode rootSubsense)
             => rootSubsense.QuerySelector("span[class='grammatical_note']")
-                        ?.InnerText ?? "";
+                ?.InnerText ?? "";
 
         private string ParseMeaning(HtmlNode container)
             => container.QuerySelector("span[class='ind']")
@@ -156,21 +159,19 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
             return otherExampleElems.Select(em => em.InnerText[7..^7]); //remove &lsquo; and &rsquo; (‘ and ’)
         }
 
-
-        private string ParseInflection(HtmlNode gramb)
-            => gramb.QuerySelector("h3 > span[class='pos-inflections']")?.InnerText ?? "";
-
-        private string ParsePartOfSpeech(HtmlNode gramb)
-            => gramb.QuerySelector("h3 > span[class='pos']")?.InnerText ?? "";
-
-        private IEnumerable<string> ParsePronunciations(HtmlNode entryHead)
-            => entryHead.QuerySelector("h3[class='pronunciations']")
-                        ?.QuerySelectorAll("span[class='phoneticspelling']")
-                        .Where(span => span.InnerText != "")
-                        .Select(span => span.InnerText)
-                        ?? Array.Empty<string>();
-
-        private string ParseWord(HtmlNode entryWrapper)
-            => entryWrapper.QuerySelector(".entryHead > header > h2 > span")?.Attributes["data-headword-id"].Value ?? "";
+        private Sense ParseSubSense(HtmlNode subsense)
+        {
+            var childSubsenses = getSubsenses(subsense);
+            return new Sense()
+            {
+                Meaning = ParseMeaning(subsense),
+                GrammaticalNote = ParseGrammaticalNote(subsense),
+                SenseRegisters = ParseSenseRegisters(subsense),
+                Examples = ParseExamples(subsense),
+                Synonyms = ParseSynonyms(subsense),
+                Antonyms = Array.Empty<string>(), //lexico's definitions do not contain antonyms
+                SubSenses = childSubsenses.Select(s => ParseSubSense(s)),
+            };
+        }
     }
 }
