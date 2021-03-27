@@ -73,8 +73,8 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
                 else if (sibling.QuerySelector("h3 > strong")?.InnerText == "Origin")
                     origin = sibling.QuerySelector("div > p")?.InnerText ?? "";
 
-                //else if (sibling.HasClass("usage"))
-                //    innerSections.Add(ParseInnerSectionUsage(sibling));
+                else if (sibling.HasClass("usage"))
+                    innerSections.Add(ParseInnerSectionUsage(sibling));
 
                 else if (sibling.HasClass("etymology"))
                     innerSections.Add(ParseInnerSectionSpecial(sibling));
@@ -89,10 +89,15 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
             };
         }
 
-        private EtymologyInnerSection ParseInnerSectionUsage(HtmlNode sibling)
-        {
-            throw new NotImplementedException();
-        }
+        private EtymologyInnerSection ParseInnerSectionUsage(HtmlNode usage)
+            => new EtymologyInnerSection()
+            {
+                PartOfSpeech = "Usage",
+                Inflection = usage.QuerySelector("div[class='senseInnerWrapper']")?.InnerText ?? "",
+                SubSenses = Array.Empty<Sense>(),
+                Synonyms = Array.Empty<string>(),
+                Antonyms = Array.Empty<string>(),
+            };
 
         private string ParseAudio(HtmlNode entryHead)
             => entryHead.QuerySelector("a[class='speaker'] > audio")
@@ -112,7 +117,6 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
             var sense = gramb.QuerySelectorAll("ul[class='semb'] > li > div[class='trg']");
             return new EtymologyInnerSection()
             {
-                Meaning = "",
                 Inflection = ParseInflection(gramb),
                 PartOfSpeech = ParsePartOfSpeech(gramb),
                 SubSenses = sense.Select(rs => ParseSense(rs)),
@@ -127,6 +131,7 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
         private string ParsePartOfSpeech(HtmlNode gramb)
             => gramb.QuerySelector("h3 > span[class='pos']")?.InnerText ?? "";
 
+        //argument sense: is a div element wih class='trg'
         private Sense ParseSense(HtmlNode sense)
         {
             var subsenses = getSubsenses(sense);
@@ -196,7 +201,7 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
             };
         }
 
-        //examples: parse Phrases section, Phrasal verbs section
+        //examples: parse Phrases section, Phrasal verbs section, ... (except Usage section)
         private EtymologyInnerSection ParseInnerSectionSpecial(HtmlNode etym)
         {
             var strongs = etym.QuerySelectorAllDirect("div[class='senseInnerWrapper'] > ul > strong[class='phrase']");
@@ -207,7 +212,6 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
                 Antonyms = Array.Empty<string>(),
                 Synonyms = Array.Empty<string>(),
                 Inflection = "",
-                Meaning = "",
             };
         }
 
@@ -245,9 +249,9 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
                 SenseRegisters = registers,
                 GrammaticalNote = note,
                 SubSenses = subsenses.Select(s => ParseSense(s)),
+                Examples = Array.Empty<string>(),
                 Antonyms = Array.Empty<string>(),
                 Synonyms = Array.Empty<string>(),
-                Examples = Array.Empty<string>(),
             };
         }
     }

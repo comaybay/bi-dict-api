@@ -79,7 +79,7 @@
             return new EtymologyInnerSection()
             {
                 PartOfSpeech = ParsePartOfSpeech(rawPartOfSpeech),
-                Meaning = ParseInfection(rawInflection),
+                Inflection = ParseInfection(rawInflection),
                 SubSenses = rawDefinitionSections.Select(raw => ParseDefinitionSection(raw)),
                 Synonyms = ParseInnerSectionSynonymSection(rawSynonymSection),
                 Antonyms = ParseInnerSectionAntonymSection(rawAntonymSection),

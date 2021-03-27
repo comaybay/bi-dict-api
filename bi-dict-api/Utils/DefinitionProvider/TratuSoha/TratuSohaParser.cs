@@ -69,7 +69,6 @@
             return new EtymologyInnerSection()
             {
                 PartOfSpeech = ParsePartOfSpeech(rawPartOfSpeech),
-                Meaning = "",
                 Antonyms = Array.Empty<string>(),
                 Synonyms = Array.Empty<string>(),
                 SubSenses = rawDefintionSections.Select(raw => ParseDefinitionSection(raw))
