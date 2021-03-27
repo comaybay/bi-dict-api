@@ -56,6 +56,7 @@
                 Origin = rawEtymologyTexts.Select(raw => ParseEtymologyText(raw)),
                 Pronunciations = ParseEtymologySectionPronunciations(rawPronunciationSection),
                 InnerSections = rawInnerSections.Select(rawSection => ParseEtymologyInnerSection(rawSection)),
+                Audio = "",
             };
         }
 
@@ -123,11 +124,15 @@
 
             return new Sense()
             {
+
                 Meaning = ParseDefinitionSectionDefinition(rawDefinitionSection),
                 Examples = ParseExamples(rawDefinitionSection),
                 Synonyms = ParseDefinitionSectionSynonyms(rawDefinitionSection),
                 Antonyms = ParseDefinitionSectionAntonyms(rawDefinitionSection),
-                SubSenses = rawSubDefinitions.Select(raw => ParseDefinitionSection(raw)) //recursion
+                SubSenses = rawSubDefinitions.Select(raw => ParseDefinitionSection(raw)),
+                GrammaticalNote = "", //too complicated to parse, these things are in Meaning string.
+                Region = "",
+                SenseRegisters = "",
             };
         }
 

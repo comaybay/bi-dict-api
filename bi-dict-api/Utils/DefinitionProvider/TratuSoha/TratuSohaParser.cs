@@ -49,7 +49,8 @@
             {
                 Origin = Array.Empty<string>(),
                 Pronunciations = Array.Empty<string>(),
-                InnerSections = rawInnerSections.Select(raw => ParseInnerSection(raw))
+                InnerSections = rawInnerSections.Select(raw => ParseInnerSection(raw)),
+                Audio = "",
             };
         }
 
@@ -71,7 +72,8 @@
                 PartOfSpeech = ParsePartOfSpeech(rawPartOfSpeech),
                 Antonyms = Array.Empty<string>(),
                 Synonyms = Array.Empty<string>(),
-                Senses = rawDefintionSections.Select(raw => ParseDefinitionSection(raw))
+                Senses = rawDefintionSections.Select(raw => ParseDefinitionSection(raw)),
+                Inflection = "",
             };
         }
 
@@ -85,7 +87,10 @@
                 Examples = rawExamples.Select(raw => ParseExample(raw)),
                 Antonyms = Array.Empty<string>(),
                 Synonyms = Array.Empty<string>(),
-                SubSenses = Array.Empty<Sense>()
+                SubSenses = Array.Empty<Sense>(),
+                SenseRegisters = "",
+                Region = "",
+                GrammaticalNote = "",
             };
         }
 

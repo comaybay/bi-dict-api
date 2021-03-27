@@ -12,7 +12,6 @@ namespace bi_dict_api.Models
         public IEnumerable<string> Examples { get; set; } = default!;
         public IEnumerable<string> Synonyms { get; set; } = default!;
         public IEnumerable<string> Antonyms { get; set; } = default!;
-
         public IEnumerable<Sense> SubSenses { get; set; } = default!;
     }
 }
