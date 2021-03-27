@@ -111,6 +111,26 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
             };
         }
 
+        //examples: parse Phrases section, Phrasal verbs section, ... (except Usage section)
+        private EtymologyInnerSection ParsePhrasesSection(HtmlNode etym)
+        {
+            var strongs = etym.QuerySelectorAllDirect("div[class='senseInnerWrapper'] > ul > strong[class='phrase']");
+            return new EtymologyInnerSection()
+            {
+                PartOfSpeech = etym.QuerySelector("h3[class='phrases-title'] > strong")?.InnerText ?? "",
+                Senses = strongs.Select(s => ParsePhrasesSectionSenses(s)),
+                Antonyms = Array.Empty<string>(),
+                Synonyms = Array.Empty<string>(),
+                Inflection = "",
+            };
+        }
+
+        private static string ParseInflection(HtmlNode gramb)
+            => gramb.QuerySelector("h3 > span[class='pos-inflections']")?.InnerText ?? "";
+
+        private static string ParsePartOfSpeech(HtmlNode gramb)
+            => gramb.QuerySelector("h3 > span[class='pos']")?.InnerText ?? "";
+
         private IEnumerable<Sense> GetSenses(HtmlNode gramb)
         {
             if (GetEmptySense(gramb) != null)
@@ -125,15 +145,6 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
                 return ParseSense(trg);
             });
         }
-
-        private static HtmlNode? GetEmptySense(HtmlNode gramb)
-            => gramb.QuerySelector("div[class='empty_sense']");
-
-        private static string ParseInflection(HtmlNode gramb)
-            => gramb.QuerySelector("h3 > span[class='pos-inflections']")?.InnerText ?? "";
-
-        private static string ParsePartOfSpeech(HtmlNode gramb)
-            => gramb.QuerySelector("h3 > span[class='pos']")?.InnerText ?? "";
 
         //argument sense: is a div element wih class='trg'
         private Sense ParseSense(HtmlNode sense)
@@ -182,6 +193,8 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
                 SubSenses = Array.Empty<Sense>(),
             };
         }
+        private static HtmlNode? GetEmptySense(HtmlNode gramb)
+            => gramb.QuerySelector("div[class='empty_sense']");
 
         private static IEnumerable<HtmlNode> GetSubsenses(HtmlNode sense)
            => sense.QuerySelectorAllDirect("ol[class~='subSenses'] > li[class='subSense']");
@@ -203,16 +216,9 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
         private static string ParseMeaningCrossReference(HtmlNode sense)
             => sense.QuerySelectorDirect("div[class='crossReference']")?.InnerText ?? "";
 
-        private static IEnumerable<string> ParseSynonyms(HtmlNode sense)
-            => sense.QuerySelector("div[class='synonyms'] > div[class='exg'] > div")
-                       ?.InnerText
-                       .Replace("&#39;", "'")
-                       .Split(", ")
-                       ?? Array.Empty<string>();
-
         private static IEnumerable<string> ParseExamples(HtmlNode sense)
         {
-            var exampleElem = sense.QuerySelector("div[class='exg'] > div > em");
+            var exampleElem = sense.QuerySelectorDirect("div[class='exg'] > div > em");
             var otherExampleElems = sense.QuerySelectorAllDirect("div[class='examples'] > div > ul > li > em");
 
             if (exampleElem != null)
@@ -220,6 +226,13 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
 
             return otherExampleElems.Select(em => em.InnerText[7..^7]); //remove &lsquo; and &rsquo; (‘ and ’)
         }
+
+        private static IEnumerable<string> ParseSynonyms(HtmlNode sense)
+            => sense.QuerySelectorDirect("div[class='synonyms'] > div[class='exg'] > div")
+                       ?.InnerText
+                       .Replace("&#39;", "'")
+                       .Split(", ")
+                       ?? Array.Empty<string>();
 
         private Sense ParseSubSense(HtmlNode subsense)
         {
@@ -237,21 +250,7 @@ namespace bi_dict_api.Utils.DefinitionProvider.Lexico
             };
         }
 
-        //examples: parse Phrases section, Phrasal verbs section, ... (except Usage section)
-        private EtymologyInnerSection ParsePhrasesSection(HtmlNode etym)
-        {
-            var strongs = etym.QuerySelectorAllDirect("div[class='senseInnerWrapper'] > ul > strong[class='phrase']");
-            return new EtymologyInnerSection()
-            {
-                PartOfSpeech = etym.QuerySelector("h3[class='phrases-title'] > strong")?.InnerText ?? "",
-                Senses = strongs.Select(s => ParseSubsenseSpecial(s)),
-                Antonyms = Array.Empty<string>(),
-                Synonyms = Array.Empty<string>(),
-                Inflection = "",
-            };
-        }
-
-        private Sense ParseSubsenseSpecial(HtmlNode strong)
+        private Sense ParsePhrasesSectionSenses(HtmlNode strong)
         {
             string region = "";
             string registers = "";
