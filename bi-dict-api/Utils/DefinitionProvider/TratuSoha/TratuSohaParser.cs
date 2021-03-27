@@ -71,7 +71,7 @@
                 PartOfSpeech = ParsePartOfSpeech(rawPartOfSpeech),
                 Antonyms = Array.Empty<string>(),
                 Synonyms = Array.Empty<string>(),
-                SubSenses = rawDefintionSections.Select(raw => ParseDefinitionSection(raw))
+                Senses = rawDefintionSections.Select(raw => ParseDefinitionSection(raw))
             };
         }
 

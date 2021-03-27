@@ -80,7 +80,7 @@
             {
                 PartOfSpeech = ParsePartOfSpeech(rawPartOfSpeech),
                 Inflection = ParseInfection(rawInflection),
-                SubSenses = rawDefinitionSections.Select(raw => ParseDefinitionSection(raw)),
+                Senses = rawDefinitionSections.Select(raw => ParseDefinitionSection(raw)),
                 Synonyms = ParseInnerSectionSynonymSection(rawSynonymSection),
                 Antonyms = ParseInnerSectionAntonymSection(rawAntonymSection),
             };

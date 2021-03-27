@@ -7,7 +7,7 @@
 
     public class LexicoParserENToEN : LexicoParser
     {
-        private static LexicoParserOptions config = new LexicoParserOptions
+        private static readonly LexicoParserOptions config = new LexicoParserOptions
         {
             DefinitionLanguage = "en",
             WordLanguage = "en",
