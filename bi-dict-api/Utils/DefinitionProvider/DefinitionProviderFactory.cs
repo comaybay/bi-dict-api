@@ -19,14 +19,14 @@ namespace bi_dict_api.Utils.DefinitionProvider
                 ("en", "vi") => new DefinitionProviderGroup(VIToENGroup(clientFactory)),
                 ("vi", "en") => new DefinitionProviderGroup(EnToVIGroup(clientFactory)),
                 ("vi", "vi") => new DefinitionProviderGroup(VIToVIGroup(clientFactory)),
-                (_, _) => throw new NotImplementedException(),
+                (_, _) => throw new NotImplementedException("Language not supported"),
             };
 
         private static IEnumerable<IDefinitionProvider> EnToENGroup(IHttpClientFactory clientFactory)
             => new IDefinitionProvider[] {
-                    //new DefinitionProviderLexico(new LexicoParserENToEN()),
+                    new DefinitionProviderLexico(new LexicoParserENToEN()),
                     new DefinitionProviderWiki(clientFactory, new WikiParserEN("en")),
-                    //new DefinitionProviderTratuSoha("en_en", new TratuSohaParserENToEN()),
+                    new DefinitionProviderTratuSoha("en_en", new TratuSohaParserENToEN()),
             };
         private static IEnumerable<IDefinitionProvider> EnToVIGroup(IHttpClientFactory clientFactory)
             => new IDefinitionProvider[] {

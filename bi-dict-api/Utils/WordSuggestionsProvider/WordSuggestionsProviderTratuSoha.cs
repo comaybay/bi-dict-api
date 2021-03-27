@@ -24,6 +24,10 @@
 
         public async Task<IEnumerable<WordSuggestion>> Get(string word)
         {
+            //avoid strange suggestions in en_vn. Examples: http://tratu.soha.vn/extensions/curl_suggest.php?search=c%C3%A1&dict=en_vn
+            if (languageCode == "en_vn" && word.Length != word.Normalize(NormalizationForm.FormD).Length)
+                return Array.Empty<WordSuggestion>();
+
             //example: http://tratu.soha.vn/extensions/curl_suggest.php?search=la&dict=vn_vn
             var response = await SendSuggestionsRequest(word);
             if (!response.IsSuccessStatusCode)
@@ -48,9 +52,8 @@
 
         private string ParseMeaning(string rawMeaning)
         {
-            //weird shit. Examples: http://tratu.soha.vn/extensions/curl_suggest.php?search=b&dict=en_vn
-            //                      http://tratu.soha.vn/extensions/curl_suggest.php?search=c%C3%A1&dict=en_vn
-            if (languageCode == "en_vn" && rawMeaning.Length != rawMeaning.Normalize(NormalizationForm.FormD).Length)
+            //weird shit. Example: http://tratu.soha.vn/extensions/curl_suggest.php?search=b&dict=en_vn
+            if (rawMeaning.Contains("Tra Từ cho rằng phần phiên âm này chưa hoàn thiện"))
                 return "";
 
             //rawMeaning contains no unnecessary parts (text inside <font> tag) 
