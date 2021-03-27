@@ -38,7 +38,7 @@
             return ParseSuggestions(doc);
         }
 
-        private IEnumerable<WordSuggestion> ParseSuggestions(XDocument doc)
+        private static IEnumerable<WordSuggestion> ParseSuggestions(XDocument doc)
             => doc.Element("results")
                   ?.Elements("rs")
                   .Where(rs => rs.Attribute("type")?.Value == "0") //get word suggestions only
@@ -50,7 +50,7 @@
                   .Where(ws => ws.Meaning != "")
             ?? new List<WordSuggestion>();
 
-        private string ParseMeaning(string rawMeaning)
+        private static string ParseMeaning(string rawMeaning)
         {
             //weird shit. Example: http://tratu.soha.vn/extensions/curl_suggest.php?search=b&dict=en_vn
             if (rawMeaning.Contains("Tra Từ cho rằng phần phiên âm này chưa hoàn thiện"))
