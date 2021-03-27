@@ -5,6 +5,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
+    using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using System.Xml.Linq;
@@ -33,7 +34,7 @@
             return ParseSuggestions(doc);
         }
 
-        private static IEnumerable<WordSuggestion> ParseSuggestions(XDocument doc)
+        private IEnumerable<WordSuggestion> ParseSuggestions(XDocument doc)
             => doc.Element("results")
                   ?.Elements("rs")
                   .Where(rs => rs.Attribute("type")?.Value == "0") //get word suggestions only
@@ -45,10 +46,11 @@
                   .Where(ws => ws.Meaning != "")
             ?? new List<WordSuggestion>();
 
-        private static string ParseMeaning(string rawMeaning)
+        private string ParseMeaning(string rawMeaning)
         {
-            //weird shit. Example: http://tratu.soha.vn/extensions/curl_suggest.php?search=b&dict=en_vn
-            if (rawMeaning.Contains("Tra Từ cho rằng phần phiên âm này chưa hoàn thiện"))
+            //weird shit. Examples: http://tratu.soha.vn/extensions/curl_suggest.php?search=b&dict=en_vn
+            //                      http://tratu.soha.vn/extensions/curl_suggest.php?search=c%C3%A1&dict=en_vn
+            if (languageCode == "en_vn" && rawMeaning.Length != rawMeaning.Normalize(NormalizationForm.FormD).Length)
                 return "";
 
             //rawMeaning contains no unnecessary parts (text inside <font> tag) 
